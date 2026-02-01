@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Quản Lý Trucking</title>
+    <style>
+        /* CSS CƠ BẢN */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 20px;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .navbar a.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .header-action {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        h2 {
+            margin: 0;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        .search-wrapper {
+            position: relative;
+            flex-grow: 1;
+            max-width: 400px;
+            margin-left: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 15px 10px 35px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 5px;
+            color: white;
+            transition: 0.3s;
+            font-size: 13px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            font-size: 14px;
+            padding: 10px 15px;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            font-size: 14px;
+            padding: 10px 15px;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: #333;
+            font-size: 14px;
+            padding: 10px 15px;
+        }
+
+        /* Nút Sửa/Xóa chuẩn */
+        .btn-edit {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .btn-edit:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+
+        .btn-group {
+            display: flex;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: bold;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background-color: #e9ecef;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            background-color: #e3f2fd;
+            color: #0d47a1;
+            border: 1px solid #bbdefb;
+        }
+
+        /* Unpaid Section */
+        .unpaid-section {
+            margin-bottom: 30px;
+            border: 2px solid #dc3545;
+            border-radius: 8px;
+            background-color: #fff;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(220, 53, 69, 0.1);
+        }
+
+        .unpaid-header {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f5c6cb;
+        }
+
+        .unpaid-table th {
+            background-color: #fff3f3;
+            color: #721c24;
+            border-bottom: 2px solid #f5c6cb;
+        }
+
+        .unpaid-total {
+            font-size: 18px;
+            color: #dc3545;
+            font-weight: bold;
+            background: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #dc3545;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 25px;
+            border: 1px solid #888;
+            width: 500px;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .modal-list-content {
+            width: 800px;
+        }
+
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input:disabled,
+        .form-group select:disabled {
+            background-color: #e9ecef;
+            color: #6c757d;
+            cursor: not-allowed;
+            border-color: #ced4da;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .modal-table th {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        .loading-text {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-paid {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-unpaid {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .date-text {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* CSS CHO LIST FILE TRONG MODAL */
+        .file-list {
+            margin-top: 5px;
+        }
+
+        .file-item {
+            background: #f8f9fa;
+            padding: 8px;
+            border: 1px solid #ddd;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .file-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            max-width: 350px;
+        }
+
+        .file-link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-remove-file {
+            color: #dc3545;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            padding: 0 5px;
+        }
+
+        .btn-remove-file:hover {
+            color: red;
+        }
+
+        .debt-summary {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: right;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="loading" class="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Đang xử lý...</div>
+    </div>
+
+    <div class="container">
+        <div class="navbar">
+            <a href="trucking.html" class="active">🏠 Dashboard</a>
+            <a href="stats.html">📊 Thống Kê</a>
+        </div>
+
+        <div class="header-action">
+            <div style="display: flex; align-items: center;">
+                <h2>🚚 Quản Lý Vận Tải</h2>
+                <div class="search-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" id="search-box" placeholder="Tìm kiếm..."
+                        onkeyup="handleSearch()">
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-warning" onclick="openCheckDebtModal()">🔍 Check Nợ</button>
+                <button class="btn btn-secondary" onclick="openCarrierManagerModal()">🏭 Nhà Xe</button>
+                <button class="btn btn-primary" onclick="openBookingModalForAdd()">+ Tạo Mới</button>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 40px;">TT</th>
+                    <th>Ngày</th>
+                    <th>Nhà Xe</th>
+                    <th>Booking</th>
+                    <th>Số Cont</th>
+                    <th>Nghiệp vụ</th>
+                    <th class="text-right">Chi phí</th>
+                    <th class="text-right">Doanh thu</th>
+                    <th style="text-align: center;">Trạng thái</th>
+                    <th style="text-align: center; width: 140px;">Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="6" style="text-align: right;">Tổng cộng:</td>
+                    <td class="text-right" id="total-cost">0 đ</td>
+                    <td class="text-right" id="total-revenue">0 đ</td>
+                    <td colspan="2"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div id="checkDebtModal" class="modal">
+        <div class="modal-content modal-list-content">
+            <span class="close" onclick="closeCheckDebtModal()">&times;</span>
+            <h3 style="color: #333; border-bottom: 2px solid #ffc107; padding-bottom: 10px;">🔍 Tra Cứu Công Nợ Nhà Xe
+            </h3>
+            <div class="form-group">
+                <label>Chọn Nhà Xe cần kiểm tra:</label>
+                <select id="sel-debt-carrier" onchange="filterDebtByCarrier()">
+                    <option value="">-- Chọn nhà xe --</option>
+                </select>
+            </div>
+            <table class="modal-table">
+                <thead>
+                    <tr>
+                        <th>Ngày tạo</th>
+                        <th>Booking</th>
+                        <th>Số Cont</th>
+                        <th>Nghiệp vụ</th>
+                        <th class="text-right">Phải trả (VNĐ)</th>
+                        <th style="text-align: center;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="debt-table-body">
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: #666;">Vui lòng chọn nhà xe để xem nợ.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="debt-summary">Tổng nợ phải trả: <span id="debt-modal-total">0 đ</span></div>
+        </div>
+    </div>
+
+    <div id="carrierListModal" class="modal">
+        <div class="modal-content modal-list-content">
+            <span class="close" onclick="closeCarrierManagerModal()">&times;</span>
+            <h3>🏭 Danh Sách Nhà Xe <button class="btn btn-success" style="float:right;"
+                    onclick="openAddCarrierModal()">+ Thêm</button></h3>
+            <table class="modal-table">
+                <thead>
+                    <tr>
+                        <th>Mã Key</th>
+                        <th>Tên Nhà Xe</th>
+                        <th>MST</th>
+                        <th style="text-align: center;">Xóa</th>
+                    </tr>
+                </thead>
+                <tbody id="carrier-list-body"></tbody>
+            </table>
+        </div>
+    </div>
+    <div id="addCarrierModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddCarrierModal()">&times;</span>
+            <h3>Thêm Nhà Xe Mới</h3>
+            <div class="form-group"><label>Tên Nhà Xe</label><input type="text" id="c-name" oninput="autoGenerateKey()">
+            </div>
+            <div class="form-group"><label>Mã Số Thuế</label><input type="text" id="c-tax" oninput="autoGenerateKey()">
+            </div>
+            <div class="form-group"><label>Mã Key</label><input type="text" id="c-key" readonly
+                    style="background: #e9ecef;"></div>
+            <button class="btn btn-success" style="width: 100%;" onclick="saveCarrier()">Lưu Nhà Xe</button>
+        </div>
+    </div>
+
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeBookingModal()">&times;</span>
+            <h3 id="modal-title" style="margin-top: 0; color: #007bff;">Thông Tin Vận Đơn</h3>
+            <input type="hidden" id="inp-id">
+            <div class="form-group"><label>Chọn Nhà Xe</label><select id="inp-carrier-select">
+                    <option value="">-- Đang tải... --</option>
+                </select></div>
+
+            <div class="form-group" style="display: flex; gap: 10px;">
+                <div style="flex: 1;"><label>Nghiệp vụ</label><input type="text" id="inp-operation"
+                        placeholder="VD: Nhập khẩu..."></div>
+                <div style="flex: 1;"><label>Mã Booking</label><input type="text" id="inp-booking"
+                        placeholder="Ví dụ: BK-2024999"></div>
+            </div>
+
+            <div class="form-group" style="display: flex; gap: 10px;">
+                <div style="flex: 1;"><label>Số Container</label><input type="text" id="inp-cont"
+                        placeholder="Ví dụ: TCNU 123456"></div>
+                <div style="flex: 1;"><label>Phải trả nhà xe</label><input type="number" id="inp-cost" placeholder="0">
+                </div>
+                <div style="flex: 1;"><label>Thu khách hàng</label><input type="number" id="inp-revenue"
+                        placeholder="0"></div>
+            </div>
+
+            <div class="form-group"
+                style="background: #fff3cd; padding: 10px; border-radius: 4px; border: 1px solid #ffeeba;">
+                <label style="color: #856404;">Cập nhật trạng thái</label>
+                <select id="inp-status" style="font-weight: bold;" onchange="toggleInvoiceSection()">
+                    <option value="unpaid">⏳ Chưa thanh toán (Còn nợ)</option>
+                    <option value="paid" style="color: green;">✅ Đã thanh toán</option>
+                </select>
+
+                <div id="invoice-upload-section"
+                    style="margin-top: 15px; display: none; border-top: 1px solid #e0c479; padding-top: 10px;">
+                    <label style="color: #6f42c1; display: block; margin-bottom: 5px;">📎 Danh sách Hóa Đơn (Chọn nhiều
+                        file)</label>
+                    <input type="file" id="inp-invoice-file" multiple accept="image/*,.pdf,.doc,.docx"
+                        style="margin-bottom: 10px;">
+                    <div id="file-list-area" class="file-list"></div>
+                </div>
+            </div>
+
+            <button id="btn-save-booking" class="btn btn-success" style="width: 100%;" onclick="saveBooking()">Lưu
+                Booking</button>
+        </div>
+    </div>
+
+    <script>
+        // === CẤU HÌNH API ĐỂ CHẠY TRÊN RENDER ===
+        const API_URL = '/api'; 
+        const SERVER_URL = window.location.origin;
+
+        const loadingEl = document.getElementById('loading');
+        let cachedData = [];
+        let currentInvoices = [];
+
+        function showLoading() { loadingEl.style.display = "flex"; }
+        function hideLoading() { loadingEl.style.display = "none"; }
+        function formatDate(isoString) {
+        if (!isoString) return '';
+        const date = new Date(isoString);
+        return date.toLocaleString('vi-VN', { 
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit' 
+        });
+    }
+
+        // === CHECK NỢ ===
+        const checkDebtModal = document.getElementById("checkDebtModal");
+        const selDebtCarrier = document.getElementById("sel-debt-carrier");
+        const debtTableBody = document.getElementById("debt-table-body");
+        const debtModalTotal = document.getElementById("debt-modal-total");
+
+        async function openCheckDebtModal() {
+            try {
+                const res = await fetch(`${API_URL}/carriers`);
+                const carriers = await res.json();
+                selDebtCarrier.innerHTML = '<option value="">-- Chọn nhà xe --</option>';
+                carriers.forEach(c => {
+                    const op = document.createElement('option');
+                    op.value = c.key; op.innerText = `${c.key} - ${c.name}`;
+                    selDebtCarrier.appendChild(op);
+                });
+            } catch (err) { console.error(err); }
+            debtTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #666;">Vui lòng chọn nhà xe để xem nợ.</td></tr>';
+            debtModalTotal.innerText = "0 đ";
+            checkDebtModal.style.display = "block";
+        }
+        function closeCheckDebtModal() { checkDebtModal.style.display = "none"; }
+
+        function filterDebtByCarrier() {
+            const carrierKey = selDebtCarrier.value;
+            if (!carrierKey) {
+                debtTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #666;">Vui lòng chọn nhà xe.</td></tr>';
+                debtModalTotal.innerText = "0 đ";
+                return;
+            }
+            const debts = cachedData.filter(item => item.carrier === carrierKey && item.paymentStatus === 'unpaid');
+            debtTableBody.innerHTML = "";
+            let total = 0;
+            if (debts.length === 0) {
+                debtTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: green; font-weight:bold;">Không có khoản nợ nào! ✅</td></tr>';
+            } else {
+                debts.forEach(item => {
+                    total += Number(item.cost);
+                    const originalIndex = cachedData.findIndex(d => d._id === item._id);
+                    debtTableBody.innerHTML += `<tr>
+                    <td>${formatDate(item.createdAt)}</td>
+                    <td>${item.booking}</td>
+                    <td>${item.container}</td>
+                    <td>${item.operationType || ''}</td>
+                    <td class="text-right" style="color: #dc3545; font-weight: bold;">${new Intl.NumberFormat('vi-VN').format(item.cost)}</td>
+                    <td style="text-align: center;"><button class="btn btn-primary" onclick="openEditByIndex(${originalIndex}, true)" style="padding: 4px 8px; font-size: 11px;">🔍 Xử lý</button></td>
+                </tr>`;
+                });
+            }
+            debtModalTotal.innerText = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total);
+        }
+
+        // === SEARCH & TABLE ===
+        function handleSearch() {
+            const keyword = document.getElementById('search-box').value.toLowerCase();
+            const filteredData = cachedData.filter(item => {
+                const searchStr = `${item.carrier || ''} ${item.operationType || ''} ${item.booking || ''} ${item.container || ''} ${item.paymentStatus === 'paid' ? 'đã thanh toán' : 'chưa thanh toán'}`.toLowerCase();
+                return searchStr.includes(keyword);
+            });
+            renderTable(filteredData);
+        }
+
+        function renderTable(data) {
+            const tableBody = document.getElementById('table-body');
+            tableBody.innerHTML = "";
+            let totalCost = 0, totalRevenue = 0;
+
+            if (data.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding: 20px;">Không tìm thấy dữ liệu</td></tr>`;
+                document.getElementById('total-cost').innerText = "0 đ";
+                document.getElementById('total-revenue').innerText = "0 đ";
+                return;
+            }
+
+            data.forEach((item, index) => {
+                totalCost += Number(item.cost);
+                totalRevenue += Number(item.revenue);
+                const statusHtml = item.paymentStatus === 'paid' ? `<span class="status-badge status-paid">Đã thanh toán</span>` : `<span class="status-badge status-unpaid">Chưa thanh toán</span>`;
+
+                // LUÔN HIỂN THỊ SỬA VÀ XÓA (KỂ CẢ ĐÃ THANH TOÁN)
+                const actionButtons = `
+                <button class="btn btn-edit" onclick="openEditByIndex(${index})">Sửa</button>
+                <button class="btn btn-delete" onclick="deleteItem('${item._id}')">Xóa</button>
+            `;
+
+                tableBody.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td class="date-text">${formatDate(item.createdAt)}</td>
+                    <td style="color:#007bff; font-weight:bold;">${item.carrier || '---'}</td>
+                    <td><span class="badge">${item.booking}</span></td>
+                    <td>${item.container}</td>
+                    <td>${item.operationType || ''}</td> 
+                    <td class="text-right">${new Intl.NumberFormat('vi-VN').format(item.cost)}</td>
+                    <td class="text-right" style="font-weight:bold;">${new Intl.NumberFormat('vi-VN').format(item.revenue)}</td>
+                    <td style="text-align: center;">${statusHtml}</td>
+                    <td style="text-align: center;">${actionButtons}</td>
+                </tr>`;
+            });
+            document.getElementById('total-cost').innerText = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalCost);
+            document.getElementById('total-revenue').innerText = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalRevenue);
+        }
+
+        async function fetchAndRender() {
+            showLoading();
+            try {
+                const res = await fetch(`${API_URL}/trucking`);
+                cachedData = await res.json();
+                renderTable(cachedData);
+                if (checkDebtModal.style.display === "block") filterDebtByCarrier();
+            } catch (err) { console.error(err); } finally { hideLoading(); }
+        }
+
+        // === MODAL ===
+        const carrierListModal = document.getElementById("carrierListModal");
+        const addCarrierModal = document.getElementById("addCarrierModal");
+        const bookingModal = document.getElementById("bookingModal");
+        const saveBtn = document.getElementById("btn-save-booking");
+        const modalTitle = document.getElementById("modal-title");
+        const fileListArea = document.getElementById("file-list-area");
+
+        function toggleInputs(disabled) {
+            const ids = ['inp-carrier-select', 'inp-operation', 'inp-booking', 'inp-cont', 'inp-cost', 'inp-revenue'];
+            ids.forEach(id => { document.getElementById(id).disabled = disabled; });
+        }
+        function toggleInvoiceSection() {
+            const status = document.getElementById('inp-status').value;
+            const section = document.getElementById('invoice-upload-section');
+            section.style.display = (status === 'paid') ? 'block' : 'none';
+        }
+
+        function openBookingModalForAdd() {
+            document.getElementById('inp-id').value = "";
+            toggleInputs(false);
+            document.getElementById('inp-carrier-select').value = "";
+            document.getElementById('inp-operation').value = "";
+            document.getElementById('inp-booking').value = "";
+            document.getElementById('inp-cont').value = "";
+            document.getElementById('inp-cost').value = "";
+            document.getElementById('inp-revenue').value = "";
+            document.getElementById('inp-status').value = "unpaid";
+
+            document.getElementById('inp-invoice-file').value = "";
+            fileListArea.innerHTML = "";
+            currentInvoices = [];
+            toggleInvoiceSection();
+
+            modalTitle.innerText = "Tạo Booking Mới";
+            saveBtn.innerText = "Lưu Booking";
+            saveBtn.className = "btn btn-success";
+
+            bookingModal.style.display = "block";
+            if (document.getElementById('inp-carrier-select').options.length <= 1) loadCarriersToSelect();
+        }
+
+        function openEditByIndex(index, isProcessMode = false) {
+            const item = cachedData[index];
+            if (!item) return;
+
+            document.getElementById('inp-id').value = item._id;
+            document.getElementById('inp-carrier-select').value = item.carrier;
+            document.getElementById('inp-operation').value = item.operationType || '';
+            document.getElementById('inp-booking').value = item.booking;
+            document.getElementById('inp-cont').value = item.container;
+            document.getElementById('inp-cost').value = item.cost;
+            document.getElementById('inp-revenue').value = item.revenue;
+            document.getElementById('inp-status').value = item.paymentStatus;
+
+            currentInvoices = item.invoices || [];
+            renderFileList(currentInvoices, item._id);
+            toggleInvoiceSection();
+            document.getElementById('inp-invoice-file').value = "";
+
+            if (isProcessMode || item.paymentStatus === 'paid') {
+                toggleInputs(true);
+                modalTitle.innerText = item.paymentStatus === 'paid' ? "Chi Tiết Booking (Đã Thanh Toán)" : "Xử Lý Thanh Toán";
+                saveBtn.innerText = "Cập nhật";
+                saveBtn.className = "btn btn-primary";
+            } else {
+                toggleInputs(false);
+                modalTitle.innerText = "Sửa Booking / Hóa Đơn";
+                saveBtn.innerText = "Lưu Thay Đổi";
+                saveBtn.className = "btn btn-success";
+            }
+            bookingModal.style.display = "block";
+        }
+
+        function renderFileList(invoices, bookingId) {
+            fileListArea.innerHTML = "";
+            if (!invoices || invoices.length === 0) {
+                fileListArea.innerHTML = "<small style='color:#999'>Chưa có file nào.</small>";
+                return;
+            }
+            invoices.forEach(file => {
+                const div = document.createElement('div');
+                div.className = 'file-item';
+                div.innerHTML = `
+                <a href="${SERVER_URL}/${file.path}" target="_blank" class="file-link" title="${file.originalName}">📄 ${file.originalName}</a>
+                <button type="button" class="btn-remove-file" onclick="deleteSingleFile('${bookingId}', '${file.path}')" title="Xóa file này">✕</button>
+            `;
+                fileListArea.appendChild(div);
+            });
+        }
+
+        function closeBookingModal() { bookingModal.style.display = "none"; }
+
+        async function deleteSingleFile(bookingId, filePath) {
+            if (!confirm("Xóa file này?")) return;
+            showLoading();
+            try {
+                await fetch(`${API_URL}/trucking/${bookingId}/delete-file`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filePath })
+                });
+                currentInvoices = currentInvoices.filter(f => f.path !== filePath);
+                renderFileList(currentInvoices, bookingId);
+                const item = cachedData.find(d => d._id === bookingId);
+                if (item) item.invoices = currentInvoices;
+            } catch (err) { alert("Lỗi xóa: " + err); } finally { hideLoading(); }
+        }
+
+        async function saveBooking() {
+            const id = document.getElementById('inp-id').value;
+            const carrier = document.getElementById('inp-carrier-select').value;
+            const operation = document.getElementById('inp-operation').value;
+            const booking = document.getElementById('inp-booking').value;
+            const cont = document.getElementById('inp-cont').value;
+            const cost = document.getElementById('inp-cost').value;
+            const revenue = document.getElementById('inp-revenue').value;
+            const status = document.getElementById('inp-status').value;
+            const fileInput = document.getElementById('inp-invoice-file');
+
+            if (!carrier || !booking) { alert("Thiếu thông tin!"); return; }
+
+            const formData = new FormData();
+            formData.append('carrier', carrier);
+            formData.append('operationType', operation);
+            formData.append('booking', booking);
+            formData.append('container', cont);
+            formData.append('cost', cost);
+            formData.append('revenue', revenue);
+            formData.append('paymentStatus', status);
+            for (let i = 0; i < fileInput.files.length; i++) { formData.append('invoiceFiles', fileInput.files[i]); }
+
+            const url = id ? `${API_URL}/trucking/${id}` : `${API_URL}/trucking`;
+            const method = id ? 'PUT' : 'POST';
+            showLoading();
+            try {
+                await fetch(url, { method: method, body: formData });
+                closeBookingModal();
+                fetchAndRender();
+            } catch (err) { alert("Lỗi: " + err); hideLoading(); }
+        }
+
+        // === COMMON UTILS ===
+        async function openCarrierManagerModal() {
+            showLoading();
+            try {
+                const res = await fetch(`${API_URL}/carriers`);
+                const carriers = await res.json();
+                const tbody = document.getElementById('carrier-list-body');
+                tbody.innerHTML = "";
+                carriers.forEach(c => tbody.innerHTML += `<tr><td style="font-weight:bold; color:#007bff;">${c.key}</td><td>${c.name}</td><td>${c.taxCode || '---'}</td><td style="text-align:center;"><button class="btn btn-delete" onclick="deleteCarrier('${c._id}','${c.key}')">Xóa</button></td></tr>`);
+                carrierListModal.style.display = "block";
+            } catch (err) { alert(err); } finally { hideLoading(); }
+        }
+        function closeCarrierManagerModal() { carrierListModal.style.display = "none"; }
+        function openAddCarrierModal() { carrierListModal.style.display = "none"; document.getElementById('c-name').value = ""; document.getElementById('c-tax').value = ""; document.getElementById('c-key').value = ""; addCarrierModal.style.display = "block"; document.getElementById('c-name').focus(); }
+        function closeAddCarrierModal() { addCarrierModal.style.display = "none"; openCarrierManagerModal(); }
+        function autoGenerateKey() {
+            const name = document.getElementById('c-name').value;
+            const tax = document.getElementById('c-tax').value;
+            if (!name) return;
+            const cleanName = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const words = cleanName.split(' ').filter(w => w.length > 0);
+            let baseKey = (words.length < 2) ? cleanName.substring(0, 3).toUpperCase() : words.map(w => w.charAt(0)).join('').toUpperCase();
+            if (tax && tax.length >= 3) baseKey += `-${tax.slice(-3)}`;
+            document.getElementById('c-key').value = baseKey;
+        }
+        async function saveCarrier() {
+            const name = document.getElementById('c-name').value;
+            const tax = document.getElementById('c-tax').value;
+            const key = document.getElementById('c-key').value;
+            if (!name || !key) { alert("Thiếu tên/key!"); return; }
+            showLoading();
+            try {
+                const res = await fetch(`${API_URL}/carriers`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, taxCode: tax, key }) });
+                const result = await res.json();
+                if (!res.ok) throw new Error(result.error);
+                closeAddCarrierModal(); loadCarriersToSelect();
+            } catch (err) { alert("❌ " + err.message); } finally { hideLoading(); }
+        }
+        async function deleteCarrier(id, key) {
+            if (!confirm(`Xóa nhà xe [${key}]?`)) return;
+            showLoading();
+            try { await fetch(`${API_URL}/carriers/${id}`, { method: 'DELETE' }); openCarrierManagerModal(); loadCarriersToSelect(); } catch (err) { alert(err); } finally { hideLoading(); }
+        }
+        async function loadCarriersToSelect() {
+            try {
+                const res = await fetch(`${API_URL}/carriers`);
+                const carriers = await res.json();
+                const select = document.getElementById('inp-carrier-select');
+                select.innerHTML = '<option value="">-- Chọn nhà xe --</option>';
+                carriers.forEach(c => { const op = document.createElement('option'); op.value = c.key; op.innerText = `${c.key} - ${c.name}`; select.appendChild(op); });
+            } catch (err) { console.error(err); }
+        }
+        async function deleteItem(id) {
+            if (!confirm("Xóa dòng này?")) return;
+            showLoading();
+            try { await fetch(`${API_URL}/trucking/${id}`, { method: 'DELETE' }); fetchAndRender(); } catch (err) { alert(err); hideLoading(); }
+        }
+        window.onclick = function (e) {
+            if (e.target == carrierListModal) closeCarrierManagerModal();
+            if (e.target == addCarrierModal) closeAddCarrierModal();
+            if (e.target == bookingModal) closeBookingModal();
+            if (e.target == checkDebtModal) closeCheckDebtModal();
+        }
+
+        loadCarriersToSelect();
+        fetchAndRender();
+    </script>
+
+</body>
+
+</html>
