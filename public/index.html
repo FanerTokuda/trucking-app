@@ -1,904 +1,616 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Quản Lý Trucking</title>
     <style>
-        /* CSS CƠ BẢN GIỮ NGUYÊN */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f9;
-            margin: 0;
-            padding: 20px;
-            font-size: 13px;
-        }
+        /* CSS CƠ BẢN */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; font-size: 13px; }
+        .container { max-width: 100%; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        .navbar { background-color: #333; overflow: hidden; border-radius: 8px 8px 0 0; margin-bottom: 20px; }
+        .navbar a { float: left; display: block; color: #f2f2f2; text-align: center; padding: 14px 16px; text-decoration: none; font-weight: bold; }
+        .navbar a:hover { background-color: #ddd; color: black; }
+        .navbar a.active { background-color: #007bff; color: white; }
+        .header-action { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #007bff; padding-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        th, td { padding: 8px 6px; text-align: left; border-bottom: 1px solid #ddd; vertical-align: top; }
+        th { background-color: #f8f9fa; color: #495057; font-weight: bold; border-top: 1px solid #dee2e6; white-space: nowrap; border-right: 1px solid #eee; }
+        td { border-right: 1px solid #eee; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .total-row { font-weight: bold; background-color: #e9ecef; }
+        
+        .btn { padding: 4px 8px; border: none; border-radius: 3px; cursor: pointer; font-weight: bold; margin-left: 3px; color: white; font-size: 11px; }
+        .btn-primary { background-color: #007bff; padding: 8px 12px; font-size: 13px; }
+        .btn-secondary { background-color: #6c757d; padding: 8px 12px; font-size: 13px; }
+        .btn-warning { background-color: #ffc107; color: #333; padding: 8px 12px; font-size: 13px; }
+        .btn-success { background-color: #28a745; }
+        .btn-edit { background-color: #ffc107; color: #333; }
+        .btn-delete { background-color: #dc3545; }
+        .btn-invoice { background-color: #6f42c1; color: white; } 
+        
+        .status-badge { padding: 3px 6px; border-radius: 10px; font-size: 10px; font-weight: bold; text-transform: uppercase; white-space: nowrap; }
+        .status-paid { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status-unpaid { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
 
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
+        .search-wrapper { position: relative; flex-grow: 1; max-width: 300px; margin-left: 10px; }
+        .search-input { width: 100%; padding: 8px 10px 8px 30px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
+        .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #888; }
 
-        .navbar {
-            background-color: #333;
-            overflow: hidden;
-            border-radius: 8px 8px 0 0;
-            margin-bottom: 20px;
-        }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: #fefefe; margin: 1% auto; padding: 20px; border: 1px solid #888; width: 95%; max-width: 1400px; border-radius: 8px; position: relative; }
+        .close { float: right; font-size: 28px; font-weight: bold; cursor: pointer; color: #aaa; }
+        
+        .form-row { display: flex; gap: 15px; margin-bottom: 8px; }
+        .form-group { flex: 1; margin-bottom: 5px; }
+        .form-group label { display: block; margin-bottom: 4px; font-weight: 600; color: #555; font-size: 12px; }
+        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 13px; }
+        .form-group input:disabled { background: #e9ecef; }
 
-        .navbar a {
-            float: left;
-            display: block;
-            color: #f2f2f2;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            font-weight: bold;
-        }
+        .file-item { background: #f8f9fa; padding: 5px; border: 1px solid #ddd; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+        .file-link { color: #007bff; text-decoration: none; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 300px; }
+        .btn-remove-file { color: red; background: none; border: none; cursor: pointer; font-weight: bold; }
+        
+        .col-money { font-weight: bold; }
+        .col-total { color: #d63384; font-weight: bold; background-color: #fff0f6; }
+        .col-depot { font-style: italic; color: #555; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
 
-        .navbar a:hover {
-            background-color: #ddd;
-            color: black;
-        }
+        .file-upload-mini { display: flex; gap: 5px; align-items: center; }
+        .file-upload-mini input[type="file"] { padding: 4px; font-size: 11px; }
+        .file-tag { background: #e2e6ea; padding: 2px 6px; border-radius: 3px; font-size: 11px; display: flex; align-items: center; gap: 5px; margin-top: 3px; }
 
-        .navbar a.active {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .header-action {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        h2 {
-            margin: 0;
-            color: #333;
-            white-space: nowrap;
-        }
-
-        /* Table */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 12px;
-        }
-
-        th,
-        td {
-            padding: 8px 6px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #f8f9fa;
-            color: #495057;
-            font-weight: bold;
-            border-top: 1px solid #dee2e6;
-            white-space: nowrap;
-            border-right: 1px solid #eee;
-        }
-
-        td {
-            border-right: 1px solid #eee;
-        }
-
-        .text-right {
-            text-align: right;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .total-row {
-            font-weight: bold;
-            background-color: #e9ecef;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 4px 8px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-left: 3px;
-            color: white;
-            font-size: 11px;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            padding: 8px 12px;
-            font-size: 13px;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            padding: 8px 12px;
-            font-size: 13px;
-        }
-
-        .btn-warning {
-            background-color: #ffc107;
-            color: #333;
-            padding: 8px 12px;
-            font-size: 13px;
-        }
-
-        .btn-success {
-            background-color: #28a745;
-        }
-
-        .btn-edit {
-            background-color: #ffc107;
-            color: #333;
-        }
-
-        .btn-delete {
-            background-color: #dc3545;
-        }
-
-        .btn-invoice {
-            background-color: #6f42c1;
-            color: white;
-        }
-
-        .status-badge {
-            padding: 3px 6px;
-            border-radius: 10px;
-            font-size: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-
-        .status-paid {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .status-unpaid {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .search-wrapper {
-            position: relative;
-            flex-grow: 1;
-            max-width: 300px;
-            margin-left: 10px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 8px 10px 8px 30px;
-            border: 1px solid #ccc;
-            border-radius: 20px;
-            outline: none;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #888;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 1% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 800px;
-            border-radius: 8px;
-            position: relative;
-        }
-
-        .close {
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            color: #aaa;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 8px;
-        }
-
-        .form-group {
-            flex: 1;
-            margin-bottom: 5px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 4px;
-            font-weight: 600;
-            color: #555;
-            font-size: 12px;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 13px;
-        }
-
-        .form-group input:disabled {
-            background: #e9ecef;
-        }
-
-        .file-item {
-            background: #f8f9fa;
-            padding: 5px;
-            border: 1px solid #ddd;
-            margin-bottom: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-        }
-
-        .file-link {
-            color: #007bff;
-            text-decoration: none;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            max-width: 300px;
-        }
-
-        .btn-remove-file {
-            color: red;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .col-money {
-            font-weight: bold;
-        }
-
-        .col-total {
-            color: #d63384;
-            font-weight: bold;
-            background-color: #fff0f6;
-        }
-
-        .col-depot {
-            font-style: italic;
-            color: #555;
-            max-width: 150px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* File Upload Custom */
-        .file-upload-mini {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
-
-        .file-upload-mini input[type="file"] {
-            padding: 4px;
-            font-size: 11px;
-        }
-
-        .file-tag {
-            background: #e2e6ea;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 11px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-top: 3px;
-        }
+        /* Bảng nhập chi tiết trong Modal */
+        .cont-list-container { overflow-x: auto; margin-bottom: 10px; border: 1px solid #ccc; padding: 5px; border-radius: 4px; }
+        .cont-list-table { width: 100%; min-width: 1200px; border-collapse: collapse; }
+        .cont-list-table th { background: #eee; padding: 5px; font-size: 11px; text-align: left; border: 1px solid #ddd; white-space: nowrap; }
+        .cont-list-table td { padding: 2px; border: 1px solid #ddd; }
+        .cont-list-table input, .cont-list-table select { width: 100%; padding: 6px; font-size: 12px; border: 1px solid #eee; }
+        .cont-list-table input:focus { border-color: #007bff; }
+        .btn-add-row { background: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-bottom: 10px; }
+        .btn-del-row { background: #dc3545; color: white; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
-
 <body>
 
-    <div id="loading"
-        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999; justify-content:center; align-items:center; flex-direction:column;">
-        <div style="font-weight:bold; color:#007bff;">Đang xử lý...</div>
+<div id="loading" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999; justify-content:center; align-items:center; flex-direction:column;">
+    <div style="font-weight:bold; color:#007bff;">Đang xử lý...</div>
+</div>
+
+<div class="container">
+    <div class="navbar">
+        <a href="index.html" class="active">🏠 Dashboard</a>
+        <a href="stats.html">📊 Thống Kê</a>
     </div>
 
-    <div class="container">
-        <div class="navbar">
-            <a href="index.html" class="active">🏠 Dashboard</a>
-            <a href="stats.html">📊 Thống Kê</a>
-        </div>
-
-        <div class="header-action">
-            <div style="display: flex; align-items: center;">
-                <h2>🚚 Quản Lý Vận Tải</h2>
-                <div class="search-wrapper">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" class="search-input" id="search-box" placeholder="Tìm kiếm..."
-                        onkeyup="handleSearch()">
-                </div>
-            </div>
-            <div class="btn-group">
-                <button class="btn btn-warning" onclick="openCheckDebtModal()">🔍 Check Nợ</button>
-                <button class="btn btn-secondary" onclick="openCarrierManagerModal()">🏭 Nhà Xe</button>
-                <button class="btn btn-primary" onclick="openBookingModalForAdd()">+ Tạo Mới</button>
+    <div class="header-action">
+        <div style="display: flex; align-items: center;">
+            <h2>🚚 Quản Lý Vận Tải</h2>
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="search-box" placeholder="Tìm kiếm..." onkeyup="handleSearch()">
             </div>
         </div>
-
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 30px;">TT</th>
-                    <th>Giờ, Ngày</th>
-                    <th>Booking</th>
-                    <th>Số xe</th>
-                    <th>Số Cont</th>
-                    <th>Loại</th>
-                    <th>Nghiệp vụ</th>
-                    <th>Nơi đi</th>
-                    <th>Nơi đến</th>
-                    <th class="text-right">ĐG chưa VAT</th>
-                    <th class="text-right">Phát sinh</th>
-                    <th class="text-right col-total">Tổng</th>
-                    <th class="text-right">CP nâng hạ</th>
-                    <th>Bãi Nâng/Hạ rỗng</th>
-                    <th class="text-center">Trạng thái</th>
-                    <th class="text-center" style="width: 100px;">Hành động</th>
-                </tr>
-            </thead>
-            <tbody id="table-body"></tbody>
-            <tfoot>
-                <tr class="total-row">
-                    <td colspan="9" style="text-align: right;">Tổng cộng:</td>
-                    <td class="text-right" id="sum-cost">0</td>
-                    <td class="text-right" id="sum-extra">0</td>
-                    <td class="text-right" id="sum-total" style="color: #d63384;">0</td>
-                    <td class="text-right" id="sum-lifting">0</td>
-                    <td></td>
-                    <td colspan="2"></td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
-
-    <div id="bookingModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeBookingModal()">&times;</span>
-            <h3 id="modal-title" style="margin-top: 0; color: #007bff;">Thông Tin Vận Đơn</h3>
-            <input type="hidden" id="inp-id">
-
-            <div class="form-row">
-                <div class="form-group"><label>Nhà Xe</label><select id="inp-carrier-select">
-                        <option value="">-- Chọn --</option>
-                    </select></div>
-                <div class="form-group"><label>Khách hàng</label><input type="text" id="inp-customer"
-                        placeholder="Tên khách hàng"></div>
-                <div class="form-group"><label>Người Handle</label><input type="text" id="inp-handler"
-                        placeholder="Nhân viên"></div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group"><label>Booking</label><input type="text" id="inp-booking"
-                        placeholder="Số BK..."></div>
-                <div class="form-group"><label>Số Xe</label><input type="text" id="inp-truck"
-                        placeholder="29C-12345..."></div>
-                <div class="form-group"><label>Số Cont</label><input type="text" id="inp-cont" placeholder="Cont...">
-                </div>
-                <div class="form-group" style="max-width: 100px;"><label>Loại Cont</label><select id="inp-cont-type">
-                        <option value="20F">20F</option>
-                        <option value="40F">40F</option>
-                    </select></div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group"><label>Nghiệp vụ</label><input type="text" id="inp-operation"
-                        placeholder="VD: Nhập..."></div>
-                <div class="form-group"><label>Nơi đi</label><input type="text" id="inp-origin" placeholder="Đi...">
-                </div>
-                <div class="form-group"><label>Nơi đến</label><input type="text" id="inp-destination"
-                        placeholder="Đến..."></div>
-            </div>
-
-            <div
-                style="background: #f1f8ff; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #cce5ff;">
-                <div class="form-row">
-                    <div class="form-group"><label>ĐG chưa VAT (Gốc)</label><input type="number" id="inp-cost"
-                            placeholder="0"></div>
-                    <div class="form-group"><label>Phát sinh</label><input type="number" id="inp-extra" placeholder="0">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group" style="flex: 1.5; border-right: 1px solid #ddd; padding-right: 10px;">
-                        <label>CP Nâng hạ</label>
-                        <div class="file-upload-mini">
-                            <input type="number" id="inp-lifting" placeholder="0" style="flex: 1;">
-                            <input type="file" id="inp-lifting-file" accept="image/*,.pdf" style="width: 90px;"
-                                title="Đính kèm hóa đơn nâng hạ">
-                        </div>
-                        <div id="lifting-file-display"></div>
-                    </div>
-
-                    <div class="form-group" style="flex: 1.5; padding-left: 10px;">
-                        <label>Bãi Nâng/Hạ rỗng (Nhập bất kỳ)</label>
-                        <input type="text" id="inp-empty-depot" placeholder="Tên bãi, địa chỉ...">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group"><label style="color: green;">Doanh thu (Thu khách)</label><input
-                            type="number" id="inp-revenue" placeholder="0"></div>
-                </div>
-            </div>
-
-            <div class="form-group"
-                style="background: #fff3cd; padding: 10px; border-radius: 4px; border: 1px solid #ffeeba;">
-                <label style="color: #856404;">Cập nhật trạng thái</label>
-                <select id="inp-status" style="font-weight: bold;" onchange="toggleInvoiceSection()">
-                    <option value="unpaid">⏳ Chưa thanh toán (Còn nợ)</option>
-                    <option value="paid" style="color: green;">✅ Đã thanh toán</option>
-                </select>
-
-                <div id="invoice-upload-section" style="margin-top: 10px; display: none;">
-                    <label style="color: #6f42c1;">📎 File Hóa Đơn Thanh Toán (Chung)</label>
-                    <input type="file" id="inp-invoice-file" multiple accept="image/*,.pdf,.doc,.docx"
-                        style="margin-bottom: 5px;">
-                    <div id="file-list-area" class="file-list"></div>
-                </div>
-            </div>
-
-            <button id="btn-save-booking" class="btn btn-success" style="width: 100%; padding: 10px;"
-                onclick="saveBooking()">Lưu Booking</button>
+        <div class="btn-group">
+            <button class="btn btn-warning" onclick="openCheckDebtModal()">🔍 Check Nợ</button>
+            <button class="btn btn-secondary" onclick="openCarrierManagerModal()">🏭 Nhà Xe</button>
+            <button class="btn btn-primary" onclick="openBookingModalForAdd()">+ Tạo Mới</button>
         </div>
     </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 30px;">TT</th>
+                <th>Giờ, Ngày</th>
+                <th>Nhà Xe</th>    
+                <th>Khách hàng</th>
+                <th>Handle</th>    
+                <th>Booking</th>
+                <th>Số xe</th>
+                <th>Số Cont</th>
+                <th>Loại</th>
+                <th>Nghiệp vụ</th>
+                <th>Nơi đi</th>
+                <th>Nơi đến</th>
+                <th class="text-right">ĐG chưa VAT</th>
+                <th class="text-right">Phát sinh</th>
+                <th class="text-right col-total">Tổng</th>
+                <th class="text-right">CP nâng hạ</th>
+                <th>Bãi Nâng/Hạ rỗng</th>
+                <th class="text-center">Trạng thái</th>
+                <th class="text-center" style="width: 100px;">Hành động</th>
+            </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+        <tfoot>
+            <tr class="total-row">
+                <td colspan="12" style="text-align: right;">Tổng cộng:</td>
+                <td class="text-right" id="sum-cost">0</td>
+                <td class="text-right" id="sum-extra">0</td>
+                <td class="text-right" id="sum-total" style="color: #d63384;">0</td>
+                <td class="text-right" id="sum-lifting">0</td>
+                <td></td> 
+                <td colspan="2"></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
 
-    <div id="checkDebtModal" class="modal">
-        <div class="modal-content" style="width: 800px;">
-            <span class="close" onclick="closeCheckDebtModal()">&times;</span>
-            <h3>🔍 Tra Cứu Công Nợ</h3>
-            <select id="sel-debt-carrier" onchange="filterDebtByCarrier()"
-                style="width: 100%; padding: 8px; margin-bottom: 10px;">
-                <option value="">-- Chọn nhà xe --</option>
+<div id="bookingModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeBookingModal()">&times;</span>
+        <h3 id="modal-title" style="margin-top: 0; color: #007bff;">Thông Tin Vận Đơn</h3>
+        <input type="hidden" id="inp-id">
+        
+        <div class="form-row">
+            <div class="form-group"><label>Nhà Xe</label><select id="inp-carrier-select"><option value="">-- Chọn --</option></select></div>
+            <div class="form-group"><label>Khách hàng</label><input type="text" id="inp-customer" placeholder="Tên khách hàng"></div>
+            <div class="form-group"><label>Người Handle</label><input type="text" id="inp-handler" placeholder="Nhân viên"></div>
+            <div class="form-group"><label>Booking</label><input type="text" id="inp-booking" placeholder="Số BK..."></div>
+        </div>
+
+        <label style="font-weight:600; color:#555;">Danh sách Container (Nhập chi tiết từng xe):</label>
+        <div class="cont-list-container">
+            <table class="cont-list-table">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">Số Xe</th>
+                        <th style="width: 10%;">Số Cont</th>
+                        <th style="width: 7%;">Loại</th>
+                        <th style="width: 10%;">Nghiệp vụ</th>
+                        <th style="width: 10%;">Nơi đi</th>
+                        <th style="width: 10%;">Nơi đến</th>
+                        <th style="width: 10%;">ĐG (Gốc)</th>
+                        <th style="width: 9%;">Phát sinh</th>
+                        <th style="width: 9%;">CP Nâng hạ</th>
+                        <th style="width: 10%;">Bãi Rỗng</th>
+                        <th style="width: 5%;">Xóa</th>
+                    </tr>
+                </thead>
+                <tbody id="cont-list-body"></tbody>
+            </table>
+        </div>
+        <button type="button" class="btn-add-row" onclick="addContRow()">+ Thêm dòng</button>
+
+        <div style="background: #f1f8ff; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #cce5ff;">
+            <div class="form-row">
+                <div class="form-group"><label style="color: green;">Doanh thu (Thu khách - Tổng)</label><input type="number" id="inp-revenue" placeholder="0"></div>
+                <div class="form-group" style="border-left: 1px solid #ddd; padding-left: 15px;">
+                    <label>File Hóa Đơn Nâng Hạ (Chung)</label>
+                    <input type="file" id="inp-lifting-file" accept="image/*,.pdf" style="width: 100%; font-size:11px;">
+                    <div id="lifting-file-display"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group" style="background: #fff3cd; padding: 10px; border-radius: 4px; border: 1px solid #ffeeba;">
+            <label style="color: #856404;">Cập nhật trạng thái</label>
+            <select id="inp-status" style="font-weight: bold;" onchange="toggleInvoiceSection()">
+                <option value="unpaid">⏳ Chưa thanh toán (Còn nợ)</option>
+                <option value="paid" style="color: green;">✅ Đã thanh toán</option>
             </select>
-            <table style="width: 100%;">
-                <thead>
-                    <tr>
-                        <th>Ngày</th>
-                        <th>Booking</th>
-                        <th>Số Cont</th>
-                        <th>Tổng phải trả</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody id="debt-table-body"></tbody>
-            </table>
-            <div style="text-align: right; font-weight: bold; margin-top: 10px; font-size: 16px;">Tổng nợ: <span
-                    id="debt-modal-total" style="color: red;">0 đ</span></div>
+
+            <div id="invoice-upload-section" style="margin-top: 10px; display: none;">
+                <label style="color: #6f42c1;">📎 File Hóa Đơn Thanh Toán (Chung)</label>
+                <input type="file" id="inp-invoice-file" multiple accept="image/*,.pdf,.doc,.docx" style="margin-bottom: 5px;">
+                <div id="file-list-area" class="file-list"></div>
+            </div>
         </div>
+
+        <button id="btn-save-booking" class="btn btn-success" style="width: 100%; padding: 10px;" onclick="saveBooking()">Lưu Booking</button>
     </div>
-    <div id="carrierListModal" class="modal">
-        <div class="modal-content"><span class="close" onclick="closeCarrierManagerModal()">&times;</span>
-            <h3>Quản Lý Nhà Xe <button class="btn btn-success" style="float: right;" onclick="openAddCarrierModal()">+
-                    Thêm</button></h3>
-            <table style="width: 100%;">
-                <thead>
-                    <tr>
-                        <th>Mã</th>
-                        <th>Tên</th>
-                        <th>MST</th>
-                        <th>Xóa</th>
-                    </tr>
-                </thead>
-                <tbody id="carrier-list-body"></tbody>
-            </table>
-        </div>
+</div>
+
+<div id="checkDebtModal" class="modal">
+    <div class="modal-content" style="width: 800px;">
+        <span class="close" onclick="closeCheckDebtModal()">&times;</span>
+        <h3>🔍 Tra Cứu Công Nợ</h3>
+        <select id="sel-debt-carrier" onchange="filterDebtByCarrier()" style="width: 100%; padding: 8px; margin-bottom: 10px;"><option value="">-- Chọn nhà xe --</option></select>
+        <table style="width: 100%;"><thead><tr><th>Ngày</th><th>Booking</th><th>Số Cont</th><th>Tổng phải trả</th><th>Thao tác</th></tr></thead><tbody id="debt-table-body"></tbody></table>
+        <div style="text-align: right; font-weight: bold; margin-top: 10px; font-size: 16px;">Tổng nợ: <span id="debt-modal-total" style="color: red;">0 đ</span></div>
     </div>
-    <div id="addCarrierModal" class="modal">
-        <div class="modal-content" style="width: 400px;"><span class="close"
-                onclick="closeAddCarrierModal()">&times;</span>
-            <h3>Thêm Nhà Xe</h3>
-            <div class="form-group"><label>Tên</label><input type="text" id="c-name" oninput="autoGenerateKey()"></div>
-            <div class="form-group"><label>MST</label><input type="text" id="c-tax" oninput="autoGenerateKey()"></div>
-            <div class="form-group"><label>Key</label><input type="text" id="c-key" readonly></div><button
-                class="btn btn-success" style="width: 100%;" onclick="saveCarrier()">Lưu</button>
-        </div>
-    </div>
+</div>
+<div id="carrierListModal" class="modal"><div class="modal-content"><span class="close" onclick="closeCarrierManagerModal()">&times;</span><h3>Quản Lý Nhà Xe <button class="btn btn-success" style="float: right;" onclick="openAddCarrierModal()">+ Thêm</button></h3><table style="width: 100%;"><thead><tr><th>Mã</th><th>Tên</th><th>MST</th><th>Xóa</th></tr></thead><tbody id="carrier-list-body"></tbody></table></div></div>
+<div id="addCarrierModal" class="modal"><div class="modal-content" style="width: 400px;"><span class="close" onclick="closeAddCarrierModal()">&times;</span><h3>Thêm Nhà Xe</h3><div class="form-group"><label>Tên</label><input type="text" id="c-name" oninput="autoGenerateKey()"></div><div class="form-group"><label>MST</label><input type="text" id="c-tax" oninput="autoGenerateKey()"></div><div class="form-group"><label>Key</label><input type="text" id="c-key" readonly></div><button class="btn btn-success" style="width: 100%;" onclick="saveCarrier()">Lưu</button></div></div>
 
-    <script>
-        const API_URL = 'http://localhost:5000/api';
-        const SERVER_URL = 'http://localhost:5000';
-        const loadingEl = document.getElementById('loading');
-        let cachedData = [];
-        let currentInvoices = []; // File chung
-        let currentLiftingInvoice = null; // File nâng hạ
+<script>
+    const API_URL = '/api'; 
+    const SERVER_URL = ''; 
+    const loadingEl = document.getElementById('loading');
+    let cachedData = []; 
+    let currentInvoices = [];
+    let currentLiftingInvoice = null;
 
-        function showLoading() { loadingEl.style.display = "flex"; }
-        function hideLoading() { loadingEl.style.display = "none"; }
-        function formatDate(isoString) {
-            if (!isoString) return '';
-            const date = new Date(isoString);
-            return date.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    function showLoading() { loadingEl.style.display = "flex"; }
+    function hideLoading() { loadingEl.style.display = "none"; }
+    function formatDate(isoString) {
+        if (!isoString) return '';
+        const date = new Date(isoString);
+        return date.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    }
+    const fmtMoney = (num) => new Intl.NumberFormat('vi-VN').format(num || 0);
+
+    function toggleInvoiceSection() {
+        const status = document.getElementById('inp-status').value;
+        document.getElementById('invoice-upload-section').style.display = (status === 'paid') ? 'block' : 'none';
+    }
+
+    function toggleInputs(disabled) {
+        const ids = ['inp-carrier-select', 'inp-customer', 'inp-handler', 'inp-booking', 'inp-revenue'];
+        ids.forEach(id => { document.getElementById(id).disabled = disabled; });
+        const rowInputs = document.querySelectorAll('.cont-list-table input, .cont-list-table select');
+        rowInputs.forEach(i => i.disabled = disabled);
+    }
+
+    // === XỬ LÝ DANH SÁCH CONTAINER ===
+    function addContRow(data = {}) {
+        const tbody = document.getElementById('cont-list-body');
+        const row = document.createElement('tr');
+        
+        // Mặc định giá trị
+        const v = {
+            vehicle: data.vehicle || '', contNo: data.contNo || '', contType: data.contType || '20F',
+            operation: data.operation || '', origin: data.origin || '', destination: data.destination || '',
+            cost: data.cost || '', extraCost: data.extraCost || '', liftingCost: data.liftingCost || '', emptyDepot: data.emptyDepot || ''
+        };
+
+        row.innerHTML = `
+            <td><input type="text" class="inp-vehicle" value="${v.vehicle}" placeholder="Xe"></td>
+            <td><input type="text" class="inp-contNo" value="${v.contNo}" placeholder="Cont"></td>
+            <td><select class="inp-contType"><option value="20F" ${v.contType==='20F'?'selected':''}>20F</option><option value="40F" ${v.contType==='40F'?'selected':''}>40F</option></select></td>
+            <td><input type="text" class="inp-operation" value="${v.operation}" placeholder="NV"></td>
+            <td><input type="text" class="inp-origin" value="${v.origin}" placeholder="Đi"></td>
+            <td><input type="text" class="inp-destination" value="${v.destination}" placeholder="Đến"></td>
+            <td><input type="number" class="inp-cost" value="${v.cost}" placeholder="0"></td>
+            <td><input type="number" class="inp-extraCost" value="${v.extraCost}" placeholder="0"></td>
+            <td><input type="number" class="inp-liftingCost" value="${v.liftingCost}" placeholder="0"></td>
+            <td><input type="text" class="inp-emptyDepot" value="${v.emptyDepot}" placeholder="Bãi"></td>
+            <td style="text-align:center;"><button type="button" class="btn-del-row" onclick="this.closest('tr').remove()">X</button></td>
+        `;
+        tbody.appendChild(row);
+    }
+
+    function getContListFromTable() {
+        const rows = document.querySelectorAll('#cont-list-body tr');
+        const list = [];
+        let totalCost = 0, totalExtra = 0, totalLifting = 0;
+
+        rows.forEach(row => {
+            const cost = Number(row.querySelector('.inp-cost').value) || 0;
+            const extra = Number(row.querySelector('.inp-extraCost').value) || 0;
+            const lifting = Number(row.querySelector('.inp-liftingCost').value) || 0;
+
+            totalCost += cost;
+            totalExtra += extra;
+            totalLifting += lifting;
+
+            list.push({
+                vehicle: row.querySelector('.inp-vehicle').value,
+                contNo: row.querySelector('.inp-contNo').value,
+                contType: row.querySelector('.inp-contType').value,
+                operation: row.querySelector('.inp-operation').value,
+                origin: row.querySelector('.inp-origin').value,
+                destination: row.querySelector('.inp-destination').value,
+                cost: cost,
+                extraCost: extra,
+                liftingCost: lifting,
+                emptyDepot: row.querySelector('.inp-emptyDepot').value
+            });
+        });
+        return { list, totalCost, totalExtra, totalLifting };
+    }
+
+    // === RENDER BẢNG CHÍNH ===
+    function renderTable(data) {
+        const tableBody = document.getElementById('table-body');
+        tableBody.innerHTML = "";
+        
+        let sCost = 0, sExtra = 0, sTotal = 0, sLifting = 0;
+
+        if (data.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="19" style="text-align:center;">Không có dữ liệu</td></tr>`;
+            return;
         }
-        const fmtMoney = (num) => new Intl.NumberFormat('vi-VN').format(num || 0);
 
-        function toggleInvoiceSection() {
-            const status = document.getElementById('inp-status').value;
-            document.getElementById('invoice-upload-section').style.display = (status === 'paid') ? 'block' : 'none';
-        }
+        data.forEach((item, index) => {
+            const cost = Number(item.cost) || 0;
+            const extra = Number(item.extraCost) || 0;
+            const lifting = Number(item.liftingCost) || 0;
+            const total = cost + extra; 
 
-        function toggleInputs(disabled) {
-            const ids = ['inp-carrier-select', 'inp-customer', 'inp-handler', 'inp-truck', 'inp-cont', 'inp-cont-type', 'inp-operation', 'inp-origin', 'inp-destination', 'inp-booking', 'inp-cost', 'inp-extra', 'inp-lifting', 'inp-empty-depot', 'inp-revenue'];
-            ids.forEach(id => { document.getElementById(id).disabled = disabled; });
-        }
+            sCost += cost; sExtra += extra; sTotal += total; sLifting += lifting;
 
-        // === RENDER BẢNG CHÍNH ===
-        function renderTable(data) {
-            const tableBody = document.getElementById('table-body');
-            tableBody.innerHTML = "";
-
-            let sCost = 0, sExtra = 0, sTotal = 0, sLifting = 0;
-
-            if (data.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="16" style="text-align:center;">Không có dữ liệu</td></tr>`;
-                return;
+            const statusHtml = item.paymentStatus === 'paid' ? `<span class="status-badge status-paid">Đã TT</span>` : `<span class="status-badge status-unpaid">Chưa TT</span>`;
+            
+            let btns = '';
+            if (item.paymentStatus === 'paid') {
+                btns = `<button class="btn btn-invoice" onclick="openEditByIndex(${index})">📝 Sửa/File</button>`;
+            } else {
+                btns = `<button class="btn btn-edit" onclick="openEditByIndex(${index})">Sửa</button> <button class="btn btn-delete" onclick="deleteItem('${item._id}')">Xóa</button>`;
             }
 
-            data.forEach((item, index) => {
-                const cost = Number(item.cost) || 0;
-                const extra = Number(item.extraCost) || 0;
-                const lifting = Number(item.liftingCost) || 0;
-                const total = cost + extra;
+            // Map detail fields using <br>
+            const c = item.containers || [];
+            const mapField = (field, isNum=false) => c.map(x => isNum ? fmtMoney(x[field]) : (x[field]||'-')).join('<br>');
 
-                sCost += cost; sExtra += extra; sTotal += total; sLifting += lifting;
-
-                const statusHtml = item.paymentStatus === 'paid' ? `<span class="status-badge status-paid">Đã TT</span>` : `<span class="status-badge status-unpaid">Chưa TT</span>`;
-
-                let btns = '';
-                if (item.paymentStatus === 'paid') {
-                    btns = `<button class="btn btn-invoice" onclick="openEditByIndex(${index})">📝 Sửa/File</button>`;
-                } else {
-                    btns = `<button class="btn btn-edit" onclick="openEditByIndex(${index})">Sửa</button> <button class="btn btn-delete" onclick="deleteItem('${item._id}')">Xóa</button>`;
-                }
-
-                tableBody.innerHTML += `
+            tableBody.innerHTML += `
                 <tr>
                     <td>${index + 1}</td>
                     <td style="font-size:11px;">${formatDate(item.createdAt)}</td>
+                    <td style="font-weight:bold; color:#007bff;">${item.carrier || ''}</td> 
+                    <td>${item.customer || ''}</td> 
+                    <td>${item.handler || ''}</td> 
                     <td>${item.booking}</td>
-                    <td>${item.truckNumber || ''}</td>
-                    <td>${item.container}</td>
-                    <td>${item.containerType || ''}</td>
-                    <td>${item.operationType || ''}</td>
-                    <td>${item.origin || ''}</td>
-                    <td>${item.destination || ''}</td>
+                    <td>${mapField('vehicle')}</td>
+                    <td>${mapField('contNo')}</td>
+                    <td>${mapField('contType')}</td>
+                    <td>${mapField('operation')}</td>
+                    <td>${mapField('origin')}</td>
+                    <td>${mapField('destination')}</td>
                     <td class="text-right col-money">${fmtMoney(cost)}</td>
                     <td class="text-right col-money">${fmtMoney(extra)}</td>
                     <td class="text-right col-total">${fmtMoney(total)}</td>
                     <td class="text-right col-money">${fmtMoney(lifting)}</td>
-                    <td class="col-depot">${item.emptyLiftingDepot || ''}</td> <td class="text-center">${statusHtml}</td>
+                    <td class="col-depot">${mapField('emptyDepot')}</td>
+                    <td class="text-center">${statusHtml}</td>
                     <td class="text-center">${btns}</td>
                 </tr>`;
-            });
+        });
 
-            document.getElementById('sum-cost').innerText = fmtMoney(sCost);
-            document.getElementById('sum-extra').innerText = fmtMoney(sExtra);
-            document.getElementById('sum-total').innerText = fmtMoney(sTotal);
-            document.getElementById('sum-lifting').innerText = fmtMoney(sLifting);
+        document.getElementById('sum-cost').innerText = fmtMoney(sCost);
+        document.getElementById('sum-extra').innerText = fmtMoney(sExtra);
+        document.getElementById('sum-total').innerText = fmtMoney(sTotal);
+        document.getElementById('sum-lifting').innerText = fmtMoney(sLifting);
+    }
+
+    // === MODAL FORM ===
+    function openBookingModalForAdd() {
+        document.getElementById('inp-id').value = "";
+        toggleInputs(false);
+        const inputs = document.querySelectorAll('#bookingModal input, #bookingModal select');
+        inputs.forEach(i => { if(i.id !== 'btn-save-booking') i.value = ""; });
+        
+        document.getElementById('cont-list-body').innerHTML = "";
+        addContRow(); // Add 1 empty row
+
+        document.getElementById('inp-status').value = "unpaid";
+        document.getElementById('file-list-area').innerHTML = "";
+        document.getElementById('lifting-file-display').innerHTML = "";
+        currentInvoices = [];
+        currentLiftingInvoice = null;
+        toggleInvoiceSection();
+        
+        document.getElementById('modal-title').innerText = "Tạo Mới";
+        document.getElementById('btn-save-booking').innerText = "Lưu Booking";
+        document.getElementById('btn-save-booking').className = "btn btn-success";
+        document.getElementById('bookingModal').style.display = "block";
+        if(document.getElementById('inp-carrier-select').options.length <= 1) loadCarriersToSelect();
+    }
+
+    function openEditByIndex(index, isProcessMode = false) {
+        const item = cachedData[index];
+        if(!item) return;
+
+        document.getElementById('inp-id').value = item._id;
+        document.getElementById('inp-carrier-select').value = item.carrier;
+        document.getElementById('inp-customer').value = item.customer || '';
+        document.getElementById('inp-handler').value = item.handler || '';
+        document.getElementById('inp-booking').value = item.booking;
+        
+        const tbody = document.getElementById('cont-list-body');
+        tbody.innerHTML = "";
+        if (item.containers && item.containers.length > 0) {
+            item.containers.forEach(c => addContRow(c));
+        } else {
+            addContRow();
         }
 
-        // === MODAL FORM ===
-        function openBookingModalForAdd() {
-            document.getElementById('inp-id').value = "";
+        document.getElementById('inp-revenue').value = item.revenue;
+        document.getElementById('inp-status').value = item.paymentStatus;
+
+        currentInvoices = item.invoices || [];
+        renderFileList(currentInvoices, item._id);
+        
+        currentLiftingInvoice = item.liftingInvoice;
+        renderLiftingFile(currentLiftingInvoice, item._id);
+
+        toggleInvoiceSection();
+        document.getElementById('inp-invoice-file').value = ""; 
+        document.getElementById('inp-lifting-file').value = "";
+
+        if (isProcessMode || item.paymentStatus === 'paid') {
+            toggleInputs(true);
+            document.getElementById('modal-title').innerText = item.paymentStatus === 'paid' ? "Chi Tiết (Đã TT)" : "Thanh Toán Công Nợ";
+            document.getElementById('btn-save-booking').innerText = "Cập nhật Trạng thái";
+            document.getElementById('btn-save-booking').className = "btn btn-primary";
+        } else {
             toggleInputs(false);
-            // Reset form inputs
-            const inputs = document.querySelectorAll('#bookingModal input, #bookingModal select');
-            inputs.forEach(i => { if (i.id !== 'btn-save-booking') i.value = ""; });
-
-            document.getElementById('inp-cont-type').value = "20F";
-            document.getElementById('inp-status').value = "unpaid";
-
-            document.getElementById('file-list-area').innerHTML = "";
-            document.getElementById('lifting-file-display').innerHTML = "";
-            currentInvoices = [];
-            currentLiftingInvoice = null;
-            toggleInvoiceSection();
-
-            document.getElementById('modal-title').innerText = "Tạo Mới";
-            document.getElementById('btn-save-booking').innerText = "Lưu Booking";
+            document.getElementById('modal-title').innerText = "Sửa Booking";
+            document.getElementById('btn-save-booking').innerText = "Lưu Thay Đổi";
             document.getElementById('btn-save-booking').className = "btn btn-success";
-            document.getElementById('bookingModal').style.display = "block";
-            if (document.getElementById('inp-carrier-select').options.length <= 1) loadCarriersToSelect();
         }
+        document.getElementById('bookingModal').style.display = "block";
+    }
 
-        function openEditByIndex(index, isProcessMode = false) {
-            const item = cachedData[index];
-            if (!item) return;
+    // === SAVE ===
+    async function saveBooking() {
+        const id = document.getElementById('inp-id').value;
+        const carrier = document.getElementById('inp-carrier-select').value;
+        const booking = document.getElementById('inp-booking').value;
+        const fileInput = document.getElementById('inp-invoice-file');
+        const liftingFileInput = document.getElementById('inp-lifting-file');
 
-            document.getElementById('inp-id').value = item._id;
-            document.getElementById('inp-carrier-select').value = item.carrier;
-            document.getElementById('inp-customer').value = item.customer || '';
-            document.getElementById('inp-handler').value = item.handler || '';
-            document.getElementById('inp-booking').value = item.booking;
-            document.getElementById('inp-truck').value = item.truckNumber || '';
-            document.getElementById('inp-cont').value = item.container;
-            document.getElementById('inp-cont-type').value = item.containerType || '20F';
-            document.getElementById('inp-operation').value = item.operationType || '';
-            document.getElementById('inp-origin').value = item.origin || '';
-            document.getElementById('inp-destination').value = item.destination || '';
-            document.getElementById('inp-cost').value = item.cost;
-            document.getElementById('inp-extra').value = item.extraCost || '';
-            document.getElementById('inp-lifting').value = item.liftingCost || '';
-            document.getElementById('inp-empty-depot').value = item.emptyLiftingDepot || ''; // Text
-            document.getElementById('inp-revenue').value = item.revenue;
-            document.getElementById('inp-status').value = item.paymentStatus;
+        if(!carrier || !booking) { alert("Thiếu Nhà xe hoặc Booking!"); return; }
 
-            // File chung
-            currentInvoices = item.invoices || [];
-            renderFileList(currentInvoices, item._id);
+        // Get container data & totals
+        const contData = getContListFromTable();
 
-            // File nâng hạ
-            currentLiftingInvoice = item.liftingInvoice;
-            renderLiftingFile(currentLiftingInvoice, item._id);
+        const formData = new FormData();
+        formData.append('carrier', carrier);
+        formData.append('customer', document.getElementById('inp-customer').value);
+        formData.append('handler', document.getElementById('inp-handler').value);
+        formData.append('booking', booking);
+        
+        formData.append('containersList', JSON.stringify(contData.list)); // Send array
+        formData.append('cost', contData.totalCost); // Send total
+        formData.append('extraCost', contData.totalExtra); // Send total
+        formData.append('liftingCost', contData.totalLifting); // Send total
 
-            toggleInvoiceSection();
-            document.getElementById('inp-invoice-file').value = "";
-            document.getElementById('inp-lifting-file').value = "";
+        formData.append('revenue', document.getElementById('inp-revenue').value);
+        formData.append('paymentStatus', document.getElementById('inp-status').value);
 
-            if (isProcessMode || item.paymentStatus === 'paid') {
-                toggleInputs(true);
-                document.getElementById('modal-title').innerText = item.paymentStatus === 'paid' ? "Chi Tiết (Đã TT)" : "Thanh Toán Công Nợ";
-                document.getElementById('btn-save-booking').innerText = "Cập nhật Trạng thái";
-                document.getElementById('btn-save-booking').className = "btn btn-primary";
-            } else {
-                toggleInputs(false);
-                document.getElementById('modal-title').innerText = "Sửa Booking";
-                document.getElementById('btn-save-booking').innerText = "Lưu Thay Đổi";
-                document.getElementById('btn-save-booking').className = "btn btn-success";
+        for (let i = 0; i < fileInput.files.length; i++) { formData.append('invoiceFiles', fileInput.files[i]); }
+        if (liftingFileInput.files.length > 0) { formData.append('liftingInvoiceFile', liftingFileInput.files[0]); }
+
+        const url = id ? `${API_URL}/trucking/${id}` : `${API_URL}/trucking`; 
+        const method = id ? 'PUT' : 'POST';
+        
+        showLoading();
+        try { 
+            await fetch(url, { method: method, body: formData }); 
+            closeBookingModal(); 
+            fetchAndRender(); 
+        } catch (err) { alert("Lỗi: " + err); hideLoading(); }
+    }
+
+    // === FILE RENDER ===
+    function renderFileList(invoices, bookingId) {
+        const area = document.getElementById('file-list-area');
+        area.innerHTML = "";
+        invoices.forEach(file => {
+            area.innerHTML += `<div class="file-tag"><a href="${SERVER_URL}/${file.path}" target="_blank" style="text-decoration:none;">📄 ${file.originalName}</a><span onclick="deleteSingleFile('${bookingId}', '${file.path}')" style="cursor:pointer; color:red; margin-left:5px;">✕</span></div>`;
+        });
+    }
+
+    function renderLiftingFile(file, bookingId) {
+        const area = document.getElementById('lifting-file-display');
+        area.innerHTML = "";
+        if (file && file.path) {
+            area.innerHTML = `<div class="file-tag" style="background:#e8f0fe; border:1px solid #b3d7ff;"><a href="${SERVER_URL}/${file.path}" target="_blank" style="text-decoration:none; color:#0056b3;">🧾 HĐ Nâng hạ</a><span onclick="deleteSingleFile('${bookingId}', '${file.path}')" style="cursor:pointer; color:red; margin-left:5px;">✕</span></div>`;
+        }
+    }
+
+    async function deleteSingleFile(bookingId, filePath) {
+        if (!confirm("Xóa file này?")) return;
+        showLoading();
+        try {
+            await fetch(`${API_URL}/trucking/${bookingId}/delete-file`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ filePath }) });
+            const item = cachedData.find(d => d._id === bookingId);
+            if(item) {
+                item.invoices = item.invoices.filter(f => f.path !== filePath);
+                if (item.liftingInvoice && item.liftingInvoice.path === filePath) item.liftingInvoice = null;
+                renderFileList(item.invoices, bookingId);
+                renderLiftingFile(item.liftingInvoice, bookingId);
             }
-            document.getElementById('bookingModal').style.display = "block";
-        }
+        } catch (err) { alert("Lỗi: " + err); } finally { hideLoading(); }
+    }
 
-        // === SAVE ===
-        async function saveBooking() {
-            const id = document.getElementById('inp-id').value;
-            const carrier = document.getElementById('inp-carrier-select').value;
-            const booking = document.getElementById('inp-booking').value;
-            const fileInput = document.getElementById('inp-invoice-file');
-            const liftingFileInput = document.getElementById('inp-lifting-file');
+    function handleSearch() {
+        const keyword = document.getElementById('search-box').value.toLowerCase();
+        const filteredData = cachedData.filter(item => {
+            // Search in containers too
+            const contStr = item.containers ? JSON.stringify(item.containers).toLowerCase() : '';
+            return Object.values(item).join(' ').toLowerCase().includes(keyword) || contStr.includes(keyword);
+        });
+        renderTable(filteredData);
+    }
+    async function fetchAndRender() {
+        showLoading();
+        try {
+            const res = await fetch(`${API_URL}/trucking`);
+            cachedData = await res.json();
+            renderTable(cachedData);
+            if(document.getElementById('checkDebtModal').style.display === "block") filterDebtByCarrier();
+        } catch (err) { console.error(err); } finally { hideLoading(); }
+    }
 
-            if (!carrier || !booking) { alert("Thiếu Nhà xe hoặc Booking!"); return; }
+    const checkDebtModal = document.getElementById("checkDebtModal");
+    const selDebtCarrier = document.getElementById("sel-debt-carrier");
+    const debtTableBody = document.getElementById("debt-table-body");
+    const debtModalTotal = document.getElementById("debt-modal-total");
 
-            const formData = new FormData();
-            // Append text fields
-            formData.append('carrier', carrier);
-            formData.append('customer', document.getElementById('inp-customer').value);
-            formData.append('handler', document.getElementById('inp-handler').value);
-            formData.append('truckNumber', document.getElementById('inp-truck').value);
-            formData.append('container', document.getElementById('inp-cont').value);
-            formData.append('containerType', document.getElementById('inp-cont-type').value);
-            formData.append('operationType', document.getElementById('inp-operation').value);
-            formData.append('origin', document.getElementById('inp-origin').value);
-            formData.append('destination', document.getElementById('inp-destination').value);
-            formData.append('booking', booking);
-            formData.append('cost', document.getElementById('inp-cost').value);
-            formData.append('extraCost', document.getElementById('inp-extra').value);
-            formData.append('liftingCost', document.getElementById('inp-lifting').value);
-            formData.append('emptyLiftingDepot', document.getElementById('inp-empty-depot').value); // Text
-            formData.append('revenue', document.getElementById('inp-revenue').value);
-            formData.append('paymentStatus', document.getElementById('inp-status').value);
-
-            // Append files
-            for (let i = 0; i < fileInput.files.length; i++) {
-                formData.append('invoiceFiles', fileInput.files[i]);
-            }
-            if (liftingFileInput.files.length > 0) {
-                formData.append('liftingInvoiceFile', liftingFileInput.files[0]);
-            }
-
-            const url = id ? `${API_URL}/trucking/${id}` : `${API_URL}/trucking`;
-            const method = id ? 'PUT' : 'POST';
-
-            showLoading();
-            try {
-                await fetch(url, { method: method, body: formData });
-                closeBookingModal();
-                fetchAndRender();
-            } catch (err) { alert("Lỗi: " + err); hideLoading(); }
-        }
-
-        // === FILE RENDER ===
-        function renderFileList(invoices, bookingId) {
-            const area = document.getElementById('file-list-area');
-            area.innerHTML = "";
-            invoices.forEach(file => {
-                area.innerHTML += `
-                <div class="file-tag">
-                    <a href="${SERVER_URL}/${file.path}" target="_blank" style="text-decoration:none;">📄 ${file.originalName}</a>
-                    <span onclick="deleteSingleFile('${bookingId}', '${file.path}')" style="cursor:pointer; color:red; margin-left:5px;">✕</span>
-                </div>`;
-            });
-        }
-
-        function renderLiftingFile(file, bookingId) {
-            const area = document.getElementById('lifting-file-display');
-            area.innerHTML = "";
-            if (file && file.path) {
-                area.innerHTML = `
-                <div class="file-tag" style="background:#e8f0fe; border:1px solid #b3d7ff;">
-                    <a href="${SERVER_URL}/${file.path}" target="_blank" style="text-decoration:none; color:#0056b3;">🧾 HĐ Nâng hạ</a>
-                    <span onclick="deleteSingleFile('${bookingId}', '${file.path}')" style="cursor:pointer; color:red; margin-left:5px;">✕</span>
-                </div>`;
-            }
-        }
-
-        async function deleteSingleFile(bookingId, filePath) {
-            if (!confirm("Xóa file này?")) return;
-            showLoading();
-            try {
-                await fetch(`${API_URL}/trucking/${bookingId}/delete-file`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ filePath })
-                });
-                // Update UI local
-                const item = cachedData.find(d => d._id === bookingId);
-                if (item) {
-                    item.invoices = item.invoices.filter(f => f.path !== filePath);
-                    if (item.liftingInvoice && item.liftingInvoice.path === filePath) item.liftingInvoice = null;
-
-                    renderFileList(item.invoices, bookingId);
-                    renderLiftingFile(item.liftingInvoice, bookingId);
-                }
-            } catch (err) { alert("Lỗi: " + err); } finally { hideLoading(); }
-        }
-
-        // === SEARCH & LOAD (Same as before) ===
-        function handleSearch() {
-            const keyword = document.getElementById('search-box').value.toLowerCase();
-            const filteredData = cachedData.filter(item => Object.values(item).join(' ').toLowerCase().includes(keyword));
-            renderTable(filteredData);
-        }
-        async function fetchAndRender() {
-            showLoading();
-            try {
-                const res = await fetch(`${API_URL}/trucking`);
-                cachedData = await res.json();
-                renderTable(cachedData);
-                if (document.getElementById('checkDebtModal').style.display === "block") filterDebtByCarrier();
-            } catch (err) { console.error(err); } finally { hideLoading(); }
-        }
-
-        // === DEBT & CARRIERS (Same) ===
-        const checkDebtModal = document.getElementById("checkDebtModal");
-        const selDebtCarrier = document.getElementById("sel-debt-carrier");
-        const debtTableBody = document.getElementById("debt-table-body");
-        const debtModalTotal = document.getElementById("debt-modal-total");
-
-        async function openCheckDebtModal() {
-            try {
-                const res = await fetch(`${API_URL}/carriers`);
-                const carriers = await res.json();
-                selDebtCarrier.innerHTML = '<option value="">-- Chọn nhà xe --</option>';
-                carriers.forEach(c => {
-                    const op = document.createElement('option');
-                    op.value = c.key; op.innerText = `${c.key} - ${c.name}`;
-                    selDebtCarrier.appendChild(op);
-                });
-            } catch (err) { }
-            debtTableBody.innerHTML = '';
-            debtModalTotal.innerText = "0 đ";
-            checkDebtModal.style.display = "block";
-        }
-        function filterDebtByCarrier() {
-            const carrierKey = selDebtCarrier.value;
-            if (!carrierKey) return;
-            const debts = cachedData.filter(item => item.carrier === carrierKey && item.paymentStatus === 'unpaid');
-            debtTableBody.innerHTML = "";
-            let total = 0;
-            debts.forEach(item => {
-                const sum = (Number(item.cost) || 0) + (Number(item.extraCost) || 0);
-                total += sum;
-                const idx = cachedData.findIndex(d => d._id === item._id);
-                debtTableBody.innerHTML += `<tr><td>${formatDate(item.createdAt)}</td><td>${item.booking}</td><td>${item.container}</td><td class="text-right">${fmtMoney(sum)}</td><td class="text-center"><button class="btn btn-primary" onclick="openEditByIndex(${idx}, true)">🔍 Xử lý</button></td></tr>`;
-            });
-            debtModalTotal.innerText = fmtMoney(total);
-        }
-
-        function closeBookingModal() { document.getElementById('bookingModal').style.display = "none"; }
-        function closeCheckDebtModal() { document.getElementById('checkDebtModal').style.display = "none"; }
-        function closeCarrierManagerModal() { document.getElementById('carrierListModal').style.display = "none"; }
-        function closeAddCarrierModal() { document.getElementById('addCarrierModal').style.display = "none"; openCarrierManagerModal(); }
-
-        async function loadCarriersToSelect() {
-            try {
-                const res = await fetch(`${API_URL}/carriers`);
-                const carriers = await res.json();
-                const select = document.getElementById('inp-carrier-select');
-                select.innerHTML = '<option value="">-- Chọn nhà xe --</option>';
-                carriers.forEach(c => { const op = document.createElement('option'); op.value = c.key; op.innerText = `${c.key} - ${c.name}`; select.appendChild(op); });
-            } catch (err) { }
-        }
-
-        async function openCarrierManagerModal() {
-            document.getElementById('carrierListModal').style.display = "block";
+    async function openCheckDebtModal() {
+        try {
             const res = await fetch(`${API_URL}/carriers`);
             const carriers = await res.json();
-            const tb = document.getElementById('carrier-list-body'); tb.innerHTML = "";
-            carriers.forEach(c => tb.innerHTML += `<tr><td>${c.key}</td><td>${c.name}</td><td>${c.taxCode || ''}</td><td><button class="btn btn-delete" onclick="deleteCarrier('${c._id}')">X</button></td></tr>`);
-        }
-        function openAddCarrierModal() { document.getElementById('addCarrierModal').style.display = "block"; }
-        function autoGenerateKey() {
-            const name = document.getElementById('c-name').value;
-            const tax = document.getElementById('c-tax').value;
-            if (name) {
-                const clean = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(' ').filter(w => w).map(w => w[0]).join('').toUpperCase();
-                document.getElementById('c-key').value = clean + (tax ? '-' + tax.slice(-3) : '');
-            }
-        }
-        async function saveCarrier() {
-            const name = document.getElementById('c-name').value;
-            const tax = document.getElementById('c-tax').value;
-            const key = document.getElementById('c-key').value;
-            await fetch(`${API_URL}/carriers`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, taxCode: tax, key }) });
-            closeAddCarrierModal();
-        }
-        async function deleteCarrier(id) {
-            if (confirm("Xóa?")) { await fetch(`${API_URL}/carriers/${id}`, { method: 'DELETE' }); openCarrierManagerModal(); }
-        }
-        async function deleteItem(id) {
-            if (confirm("Xóa dòng này?")) { await fetch(`${API_URL}/trucking/${id}`, { method: 'DELETE' }); fetchAndRender(); }
-        }
+            selDebtCarrier.innerHTML = '<option value="">-- Chọn nhà xe --</option>';
+            carriers.forEach(c => { const op = document.createElement('option'); op.value = c.key; op.innerText = `${c.key} - ${c.name}`; selDebtCarrier.appendChild(op); });
+        } catch (err) {}
+        debtTableBody.innerHTML = '';
+        debtModalTotal.innerText = "0 đ";
+        checkDebtModal.style.display = "block";
+    }
+    function filterDebtByCarrier() {
+        const carrierKey = selDebtCarrier.value;
+        if (!carrierKey) return;
+        const debts = cachedData.filter(item => item.carrier === carrierKey && item.paymentStatus === 'unpaid');
+        debtTableBody.innerHTML = "";
+        let total = 0;
+        debts.forEach(item => {
+            const sum = (Number(item.cost)||0) + (Number(item.extraCost)||0);
+            total += sum;
+            const idx = cachedData.findIndex(d => d._id === item._id);
+            debtTableBody.innerHTML += `<tr><td>${formatDate(item.createdAt)}</td><td>${item.booking}</td><td>${item.containers ? item.containers.length : 0} cont</td><td class="text-right">${fmtMoney(sum)}</td><td class="text-center"><button class="btn btn-primary" onclick="openEditByIndex(${idx}, true)">🔍 Xử lý</button></td></tr>`;
+        });
+        debtModalTotal.innerText = fmtMoney(total);
+    }
 
-        window.onclick = function (e) {
-            if (e.target == document.getElementById('bookingModal')) closeBookingModal();
-            if (e.target == document.getElementById('checkDebtModal')) closeCheckDebtModal();
-            if (e.target == document.getElementById('carrierListModal')) closeCarrierManagerModal();
+    function closeBookingModal() { document.getElementById('bookingModal').style.display = "none"; }
+    function closeCheckDebtModal() { document.getElementById('checkDebtModal').style.display = "none"; }
+    function closeCarrierManagerModal() { document.getElementById('carrierListModal').style.display = "none"; }
+    function closeAddCarrierModal() { document.getElementById('addCarrierModal').style.display = "none"; openCarrierManagerModal(); }
+    
+    async function loadCarriersToSelect() {
+        try {
+            const res = await fetch(`${API_URL}/carriers`);
+            const carriers = await res.json();
+            const select = document.getElementById('inp-carrier-select');
+            select.innerHTML = '<option value="">-- Chọn nhà xe --</option>';
+            carriers.forEach(c => { const op = document.createElement('option'); op.value = c.key; op.innerText = `${c.key} - ${c.name}`; select.appendChild(op); });
+        } catch (err) {}
+    }
+    
+    async function openCarrierManagerModal() {
+        document.getElementById('carrierListModal').style.display = "block";
+        const res = await fetch(`${API_URL}/carriers`);
+        const carriers = await res.json();
+        const tb = document.getElementById('carrier-list-body'); tb.innerHTML = "";
+        carriers.forEach(c => tb.innerHTML += `<tr><td>${c.key}</td><td>${c.name}</td><td>${c.taxCode||''}</td><td><button class="btn btn-delete" onclick="deleteCarrier('${c._id}')">X</button></td></tr>`);
+    }
+    function openAddCarrierModal() { document.getElementById('addCarrierModal').style.display = "block"; }
+    function autoGenerateKey() {
+        const name = document.getElementById('c-name').value;
+        const tax = document.getElementById('c-tax').value;
+        if(name) {
+            const clean = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(' ').filter(w=>w).map(w=>w[0]).join('').toUpperCase();
+            document.getElementById('c-key').value = clean + (tax ? '-' + tax.slice(-3) : '');
         }
+    }
+    async function saveCarrier() {
+        const name = document.getElementById('c-name').value;
+        const tax = document.getElementById('c-tax').value;
+        const key = document.getElementById('c-key').value;
+        await fetch(`${API_URL}/carriers`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name, taxCode:tax, key})});
+        closeAddCarrierModal();
+    }
+    async function deleteCarrier(id) {
+        if(confirm("Xóa?")) { await fetch(`${API_URL}/carriers/${id}`, {method:'DELETE'}); openCarrierManagerModal(); }
+    }
+    async function deleteItem(id) {
+        if(confirm("Xóa dòng này?")) { await fetch(`${API_URL}/trucking/${id}`, {method:'DELETE'}); fetchAndRender(); }
+    }
 
-        loadCarriersToSelect();
-        fetchAndRender();
-    </script>
+    window.onclick = function(e) {
+        if (e.target == document.getElementById('bookingModal')) closeBookingModal();
+        if (e.target == document.getElementById('checkDebtModal')) closeCheckDebtModal();
+        if (e.target == document.getElementById('carrierListModal')) closeCarrierManagerModal();
+    }
+
+    loadCarriersToSelect();
+    fetchAndRender();
+</script>
 
 </body>
-
 </html>
