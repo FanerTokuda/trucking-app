@@ -584,7 +584,7 @@
 
     <script>
         // === CẤU HÌNH API ĐỂ CHẠY TRÊN RENDER ===
-        const API_URL = '/api'; 
+        const API_URL = '/api';
         const SERVER_URL = window.location.origin;
 
         const loadingEl = document.getElementById('loading');
@@ -594,13 +594,13 @@
         function showLoading() { loadingEl.style.display = "flex"; }
         function hideLoading() { loadingEl.style.display = "none"; }
         function formatDate(isoString) {
-        if (!isoString) return '';
-        const date = new Date(isoString);
-        return date.toLocaleString('vi-VN', { 
-            day: '2-digit', month: '2-digit', year: 'numeric',
-            hour: '2-digit', minute: '2-digit' 
-        });
-    }
+            if (!isoString) return '';
+            const date = new Date(isoString);
+            return date.toLocaleString('vi-VN', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+        }
 
         // === CHECK NỢ ===
         const checkDebtModal = document.getElementById("checkDebtModal");
@@ -909,9 +909,27 @@
             } catch (err) { console.error(err); }
         }
         async function deleteItem(id) {
-            if (!confirm("Xóa dòng này?")) return;
+            if (!confirm("⚠️ Bạn có chắc chắn muốn xóa dòng này không?\n(Các file hóa đơn đính kèm cũng sẽ bị xóa vĩnh viễn)")) return;
+
             showLoading();
-            try { await fetch(`${API_URL}/trucking/${id}`, { method: 'DELETE' }); fetchAndRender(); } catch (err) { alert(err); hideLoading(); }
+            try {
+                const res = await fetch(`${API_URL}/trucking/${id}`, { method: 'DELETE' });
+
+                if (!res.ok) throw new Error("Gặp lỗi khi xóa trên Server");
+
+                // Tải lại dữ liệu
+                await fetchAndRender();
+
+                // Nếu đang mở bảng Check Nợ thì cũng tải lại bảng đó luôn để đồng bộ
+                if (document.getElementById('checkDebtModal').style.display === "block") {
+                    filterDebtByCarrier();
+                }
+
+            } catch (err) {
+                alert("❌ Lỗi: " + err.message);
+            } finally {
+                hideLoading();
+            }
         }
         window.onclick = function (e) {
             if (e.target == carrierListModal) closeCarrierManagerModal();
