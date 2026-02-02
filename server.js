@@ -1,179 +1,260 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
 const app = express();
-// THAY ĐỔI 1: Để Render tự cấp Port hoặc dùng 5000 nếu chạy local
-const PORT = process.env.PORT || 5000;
-
 app.use(cors());
 app.use(express.json());
 
-// THAY ĐỔI 2: Cấu hình để server hiển thị file trong thư mục public và uploads
-app.use(express.static('public')); 
-app.use('/uploads', express.static('uploads'));
+// ===> SỬA LẠI ĐOẠN NÀY ĐỂ TRỎ VÀO THƯ MỤC PUBLIC <===
+
+// 1. Cho phép truy cập file trong thư mục 'public' (nơi chứa index.html, stats.html)
+app.use(express.static(path.join(__dirname, "public")));
+
+// 2. Cho phép truy cập thư mục 'uploads' (nằm ở ngoài, ngang hàng server.js)
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// 3. Khi vào trang chủ, tìm và mở file public/index.html
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// =======================================================
 
 // Cấu hình Multer
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
-        cb(null, 'uploads/');
-    },
-    filename: function (req, file, cb) {
-        // Encoding tên file để tránh lỗi ký tự đặc biệt
-        file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8');
-        cb(null, Date.now() + '-' + file.originalname);
-    }
+  destination: function (req, file, cb) {
+    if (!fs.existsSync("uploads")) fs.mkdirSync("uploads");
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    file.originalname = Buffer.from(file.originalname, "latin1").toString(
+      "utf8",
+    );
+    cb(null, Date.now() + "-" + file.originalname);
+  },
 });
 const upload = multer({ storage: storage });
 
-mongoose.connect('mongodb+srv://anhtuanbl123:anhtuanbl123@cluster0.ltknaud.mongodb.net/?appName=Cluster0')
-    .then(() => console.log('✅ Đã kết nối MongoDB!'))
-    .catch(err => console.error('❌ Lỗi DB:', err));
+mongoose
+  .connect(
+    "mongodb+srv://anhtuanbl123:anhtuanbl123@cluster0.ltknaud.mongodb.net/?appName=Cluster0",
+  )
+  .then(() => console.log("✅ Đã kết nối MongoDB!"))
+  .catch((err) => console.error("❌ Lỗi DB:", err));
 
 const CarrierSchema = new mongoose.Schema({
-    name: String, taxCode: String, key: String,
-    createdAt: { type: Date, default: Date.now }
+  name: String,
+  taxCode: String,
+  key: String,
+  createdAt: { type: Date, default: Date.now },
 });
-const CarrierModel = mongoose.model('Carrier', CarrierSchema);
+const CarrierModel = mongoose.model("Carrier", CarrierSchema);
 
-// === SCHEMA MỚI: DÙNG MẢNG INVOICES ===
 const TruckingSchema = new mongoose.Schema({
-    carrier: String,   
-    operationType: String,
-    booking: String,
-    container: String,
-    cost: Number,
-    revenue: Number,
-    paymentStatus: { type: String, default: 'unpaid' },
-    
-    // Mảng chứa danh sách file
-    invoices: [{ 
-        path: String, 
-        originalName: String 
-    }],
-    
-    createdAt: { type: Date, default: Date.now }
+  carrier: String,
+  customer: String,
+  handler: String,
+  booking: String,
+  truckNumber: String,
+  container: String,
+  containerType: String,
+  operationType: String,
+  origin: String,
+  destination: String,
+  cost: Number,
+  extraCost: { type: Number, default: 0 },
+  liftingCost: { type: Number, default: 0 },
+  emptyLiftingDepot: String, // Đã đổi thành String
+  liftingInvoice: { path: String, originalName: String },
+  revenue: Number,
+  paymentStatus: { type: String, default: "unpaid" },
+  invoices: [{ path: String, originalName: String }],
+  createdAt: { type: Date, default: Date.now },
 });
-const TruckingModel = mongoose.model('Trucking', TruckingSchema);
+const TruckingModel = mongoose.model("Trucking", TruckingSchema);
 
 // --- API ROUTES ---
+const cpUpload = upload.fields([
+  { name: "invoiceFiles", maxCount: 10 },
+  { name: "liftingInvoiceFile", maxCount: 1 },
+]);
 
-app.get('/api/carriers', async (req, res) => {
-    try { const data = await CarrierModel.find().sort({ name: 1 }); res.json(data); } catch (err) { res.status(500).json(err); }
+app.get("/api/carriers", async (req, res) => {
+  try {
+    const data = await CarrierModel.find().sort({ name: 1 });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
-app.post('/api/carriers', async (req, res) => {
-    try {
-        if (await CarrierModel.findOne({ name: req.body.name, taxCode: req.body.taxCode })) return res.status(400).json({ error: "Trùng nhà xe!" });
-        const newItem = new CarrierModel(req.body); await newItem.save(); res.json(newItem);
-    } catch (err) { res.status(500).json({ error: err.message }); }
+app.post("/api/carriers", async (req, res) => {
+  try {
+    if (
+      await CarrierModel.findOne({
+        name: req.body.name,
+        taxCode: req.body.taxCode,
+      })
+    )
+      return res.status(400).json({ error: "Trùng nhà xe!" });
+    const newItem = new CarrierModel(req.body);
+    await newItem.save();
+    res.json(newItem);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
-app.delete('/api/carriers/:id', async (req, res) => {
-    try { await CarrierModel.findByIdAndDelete(req.params.id); res.json({ message: "Deleted" }); } catch (err) { res.status(500).json(err); }
-});
-
-// --- BOOKING ---
-app.get('/api/trucking', async (req, res) => {
-    try { const data = await TruckingModel.find().sort({ createdAt: -1 }); res.json(data); } catch (err) { res.status(500).json(err); }
-});
-
-// Thêm mới (Upload nhiều file)
-app.post('/api/trucking', upload.array('invoiceFiles', 10), async (req, res) => {
-    try {
-        const data = req.body;
-        data.invoices = [];
-
-        // Duyệt qua danh sách file tải lên
-        if (req.files && req.files.length > 0) {
-            req.files.forEach(file => {
-                data.invoices.push({
-                    path: file.path.replace(/\\/g, "/"),
-                    originalName: file.originalname
-                });
-            });
-        }
-        
-        const newItem = new TruckingModel(data); await newItem.save(); res.json(newItem);
-    } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-// Sửa (Append thêm file mới vào danh sách cũ)
-app.put('/api/trucking/:id', upload.array('invoiceFiles', 10), async (req, res) => {
-    try {
-        const item = await TruckingModel.findById(req.params.id);
-        if (!item) return res.status(404).json({error: "Not found"});
-
-        // Cập nhật thông tin text
-        item.carrier = req.body.carrier;
-        item.operationType = req.body.operationType;
-        item.booking = req.body.booking;
-        item.container = req.body.container;
-        item.cost = req.body.cost;
-        item.revenue = req.body.revenue;
-        item.paymentStatus = req.body.paymentStatus;
-
-        // Nếu có file mới, push thêm vào mảng cũ
-        if (req.files && req.files.length > 0) {
-            req.files.forEach(file => {
-                item.invoices.push({
-                    path: file.path.replace(/\\/g, "/"),
-                    originalName: file.originalname
-                });
-            });
-        }
-
-        await item.save();
-        res.json({ message: "Updated" });
-    } catch (err) { res.status(500).json({ error: err.message }); }
+app.delete("/api/carriers/:id", async (req, res) => {
+  try {
+    await CarrierModel.findByIdAndDelete(req.params.id);
+    res.json({ message: "Deleted" });
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
-app.delete('/api/trucking/:id', async (req, res) => {
-    try {
-        // 1. Tìm booking trước để lấy danh sách file
-        const item = await TruckingModel.findById(req.params.id);
-        
-        if (item && item.invoices && item.invoices.length > 0) {
-            // 2. Duyệt qua từng file và xóa khỏi ổ cứng
-            item.invoices.forEach(file => {
-                try {
-                    if (fs.existsSync(file.path)) {
-                        fs.unlinkSync(file.path); // Xóa file vật lý
-                    }
-                } catch (e) {
-                    console.error("Lỗi xóa file rác:", e); // Bỏ qua nếu lỗi file (để vẫn xóa đc booking)
-                }
-            });
-        }
+app.get("/api/trucking", async (req, res) => {
+  try {
+    const data = await TruckingModel.find().sort({ createdAt: -1 });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 
-        // 3. Sau khi dọn file xong thì xóa dữ liệu trong DB
-        await TruckingModel.findByIdAndDelete(req.params.id);
-        res.json({ message: "Đã xóa dữ liệu và file đính kèm" });
-    } catch (err) { 
-        res.status(500).json({ error: err.message }); 
+app.post("/api/trucking", cpUpload, async (req, res) => {
+  try {
+    const data = req.body;
+    data.invoices = [];
+    if (req.files["invoiceFiles"]) {
+      req.files["invoiceFiles"].forEach((file) => {
+        data.invoices.push({
+          path: file.path.replace(/\\/g, "/"),
+          originalName: file.originalname,
+        });
+      });
     }
+    if (req.files["liftingInvoiceFile"]) {
+      const file = req.files["liftingInvoiceFile"][0];
+      data.liftingInvoice = {
+        path: file.path.replace(/\\/g, "/"),
+        originalName: file.originalname,
+      };
+    }
+    const newItem = new TruckingModel(data);
+    await newItem.save();
+    res.json(newItem);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// --- API XÓA 1 FILE CỤ THỂ TRONG DANH SÁCH ---
-app.post('/api/trucking/:id/delete-file', async (req, res) => {
-    try {
-        const { filePath } = req.body; // Client gửi đường dẫn file cần xóa
-        const item = await TruckingModel.findById(req.params.id);
-        
-        if (item) {
-            // 1. Xóa file vật lý
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-            }
-            // 2. Xóa khỏi mảng trong DB
-            item.invoices = item.invoices.filter(f => f.path !== filePath);
-            await item.save();
+app.put("/api/trucking/:id", cpUpload, async (req, res) => {
+  try {
+    const item = await TruckingModel.findById(req.params.id);
+    if (!item) return res.status(404).json({ error: "Not found" });
+
+    const fields = [
+      "carrier",
+      "customer",
+      "handler",
+      "truckNumber",
+      "container",
+      "containerType",
+      "operationType",
+      "origin",
+      "destination",
+      "booking",
+      "paymentStatus",
+      "emptyLiftingDepot",
+    ];
+    fields.forEach((f) => (item[f] = req.body[f]));
+
+    item.cost = Number(req.body.cost) || 0;
+    item.extraCost = Number(req.body.extraCost) || 0;
+    item.liftingCost = Number(req.body.liftingCost) || 0;
+    item.revenue = Number(req.body.revenue) || 0;
+
+    if (req.files["invoiceFiles"]) {
+      req.files["invoiceFiles"].forEach((file) => {
+        item.invoices.push({
+          path: file.path.replace(/\\/g, "/"),
+          originalName: file.originalname,
+        });
+      });
+    }
+    if (req.files["liftingInvoiceFile"]) {
+      if (
+        item.liftingInvoice &&
+        item.liftingInvoice.path &&
+        fs.existsSync(item.liftingInvoice.path)
+      ) {
+        fs.unlinkSync(item.liftingInvoice.path);
+      }
+      const file = req.files["liftingInvoiceFile"][0];
+      item.liftingInvoice = {
+        path: file.path.replace(/\\/g, "/"),
+        originalName: file.originalname,
+      };
+    }
+
+    await item.save();
+    res.json({ message: "Updated" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete("/api/trucking/:id", async (req, res) => {
+  try {
+    const item = await TruckingModel.findById(req.params.id);
+    if (item) {
+      if (item.invoices) {
+        item.invoices.forEach((file) => {
+          try {
+            if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+          } catch (e) {
+            console.error(e);
+          }
+        });
+      }
+      if (item.liftingInvoice && item.liftingInvoice.path) {
+        try {
+          if (fs.existsSync(item.liftingInvoice.path))
+            fs.unlinkSync(item.liftingInvoice.path);
+        } catch (e) {
+          console.error(e);
         }
-        res.json({ message: "File deleted" });
-    } catch (err) { res.status(500).json({ error: err.message }); }
+      }
+    }
+    await TruckingModel.findByIdAndDelete(req.params.id);
+    res.json({ message: "Deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// THAY ĐỔI 3: Listen theo biến PORT
-app.listen(PORT, () => { console.log(`🚀 Server running at http://localhost:${PORT}`); });
+app.post("/api/trucking/:id/delete-file", async (req, res) => {
+  try {
+    const { filePath } = req.body;
+    const item = await TruckingModel.findById(req.params.id);
+    if (item) {
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      item.invoices = item.invoices.filter((f) => f.path !== filePath);
+      if (item.liftingInvoice && item.liftingInvoice.path === filePath) {
+        item.liftingInvoice = undefined;
+      }
+      await item.save();
+    }
+    res.json({ message: "File deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.listen(5000, () => {
+  console.log("🚀 Server running at http://localhost:5000");
+});
