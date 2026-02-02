@@ -132,16 +132,28 @@ app.put('/api/trucking/:id', upload.array('invoiceFiles', 10), async (req, res) 
 
 app.delete('/api/trucking/:id', async (req, res) => {
     try {
+        // 1. Tìm booking trước để lấy danh sách file
         const item = await TruckingModel.findById(req.params.id);
-        if (item && item.invoices) {
-            // Xóa tất cả file đính kèm trước khi xóa record
+        
+        if (item && item.invoices && item.invoices.length > 0) {
+            // 2. Duyệt qua từng file và xóa khỏi ổ cứng
             item.invoices.forEach(file => {
-                if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+                try {
+                    if (fs.existsSync(file.path)) {
+                        fs.unlinkSync(file.path); // Xóa file vật lý
+                    }
+                } catch (e) {
+                    console.error("Lỗi xóa file rác:", e); // Bỏ qua nếu lỗi file (để vẫn xóa đc booking)
+                }
             });
         }
+
+        // 3. Sau khi dọn file xong thì xóa dữ liệu trong DB
         await TruckingModel.findByIdAndDelete(req.params.id);
-        res.json({ message: "Deleted" });
-    } catch (err) { res.status(500).json(err); }
+        res.json({ message: "Đã xóa dữ liệu và file đính kèm" });
+    } catch (err) { 
+        res.status(500).json({ error: err.message }); 
+    }
 });
 
 // --- API XÓA 1 FILE CỤ THỂ TRONG DANH SÁCH ---
