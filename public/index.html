@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Quản Lý Trucking</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 15px; font-size: 13px; color: #333; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 10px 15px; font-size: 13px; color: #333; }
         .container { max-width: 100%; margin: 0 auto; background: transparent; }
         
         .navbar { background-color: #ffffff; border-radius: 8px; margin-bottom: 15px; display: flex; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
@@ -13,18 +13,18 @@
         .navbar a:hover { background-color: #f8f9fa; color: #007bff; }
         .navbar a.active { background-color: #007bff; color: white; }
         
-        .panel { background: #fff; border-radius: 8px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        .panel { background: #fff; border-radius: 8px; padding: 12px 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; }
         .header-action { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .header-action h2 { margin: 0; font-size: 20px; color: #1a1a1a; display: flex; align-items: center; gap: 8px; }
+        .header-action h2 { margin: 0; font-size: 18px; color: #1a1a1a; display: flex; align-items: center; gap: 8px; }
         
-        /* BẢNG TỐI ƯU CỘT (DESKTOP) */
+        /* BẢNG TỐI ƯU CỘT SIÊU GỌN */
         .table-responsive { overflow-x: auto; background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; }
         table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; } 
-        th { background-color: #f8fafc; color: #475569; padding: 8px 10px; text-align: left; font-weight: 600; border-bottom: 2px solid #cbd5e1; }
-        td { padding: 6px 10px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+        th { background-color: #f8fafc; color: #475569; padding: 6px 4px; text-align: left; font-weight: 600; border-bottom: 2px solid #cbd5e1; }
+        td { padding: 4px 4px; vertical-align: middle; border-bottom: 1px solid #e2e8f0; }
         tr:hover { background-color: #f1f5f9; }
         
-        .cell-group { display: flex; flex-direction: column; gap: 4px; }
+        .cell-group { display: flex; flex-direction: column; gap: 2px; }
         .text-muted { color: #64748b; font-size: 11px; }
         .text-bold { font-weight: 600; color: #0f172a; }
         .text-primary { color: #0284c7; }
@@ -34,102 +34,89 @@
         .text-center { text-align: center; }
         .total-row { font-weight: bold; background-color: #f8fafc; border-top: 2px solid #cbd5e1; }
         
-        /* Cột cố định */
-        .col-status { white-space: normal; min-width: 140px; max-width: 140px; word-wrap: break-word; } 
-        .col-route { width: 1%; } 
+        .col-status { white-space: normal; min-width: 120px; max-width: 120px; word-wrap: break-word; } 
 
-        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; transition: 0.2s; }
+        .btn { padding: 4px 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 11px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; transition: 0.2s; }
         .btn:hover { opacity: 0.9; }
-        .btn-sm { padding: 4px 8px; font-size: 11px; }
-        .btn-primary { background-color: #0ea5e9; color: white; }
-        .btn-secondary { background-color: #64748b; color: white; }
-        .btn-warning { background-color: #f59e0b; color: white; }
+        .btn-sm { padding: 3px 6px; font-size: 11px; }
+        .btn-primary { background-color: #0ea5e9; color: white; padding: 6px 12px; font-size: 12px; }
+        .btn-secondary { background-color: #64748b; color: white; padding: 6px 12px; font-size: 12px; }
+        .btn-warning { background-color: #f59e0b; color: white; padding: 6px 12px; font-size: 12px; }
         .btn-success { background-color: #10b981; color: white; }
         .btn-danger { background-color: #ef4444; color: white; }
+        .btn-info { background-color: #06b6d4; color: white; }
         
-        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; display: inline-block; text-align: center; }
+        .status-badge { padding: 3px 6px; border-radius: 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; display: inline-block; text-align: center; }
         .status-paid { background-color: #dcfce7; color: #166534; }
         .status-unpaid { background-color: #fee2e2; color: #991b1b; }
 
-        .search-wrapper { position: relative; width: 300px; }
-        .search-input { width: 100%; padding: 8px 12px 8px 35px; border: 1px solid #cbd5e1; border-radius: 20px; outline: none; font-size: 13px; background: #f8fafc; }
+        .search-wrapper { position: relative; width: 250px; }
+        .search-input { width: 100%; padding: 6px 12px 6px 35px; border: 1px solid #cbd5e1; border-radius: 20px; outline: none; font-size: 12px; background: #f8fafc; }
         .search-input:focus { border-color: #0ea5e9; background: #fff; }
-        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 14px; }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 12px; }
 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px); }
         .modal-content { background-color: #fff; margin: 3% auto; padding: 20px; border-radius: 10px; width: 95%; max-width: 1200px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; }
         .close { position: absolute; right: 20px; top: 20px; font-size: 24px; font-weight: bold; cursor: pointer; color: #94a3b8; line-height: 1; transition: 0.2s; z-index: 10; }
         .close:hover { color: #0f172a; }
         
-        .form-row { display: flex; gap: 15px; margin-bottom: 12px; }
-        .form-group { flex: 1; display: flex; flex-direction: column; gap: 5px; }
-        .form-group label { font-weight: 600; color: #334155; font-size: 12px; }
-        .form-group input, .form-group select { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; outline: none; }
+        .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .form-group { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .form-group label { font-weight: 600; color: #334155; font-size: 11px; }
+        .form-group input, .form-group select { width: 100%; padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; outline: none; box-sizing: border-box;}
         .form-group input:focus, .form-group select:focus { border-color: #0ea5e9; box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1); }
         .form-group input:disabled { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
 
-        .cont-list-container { overflow-x: auto; margin-bottom: 15px; border: 1px solid #e2e8f0; border-radius: 6px; }
+        .cont-list-container { overflow-x: auto; margin-bottom: 10px; border: 1px solid #e2e8f0; border-radius: 6px; }
         .cont-list-table { width: 100%; min-width: 900px; border-collapse: collapse; }
-        .cont-list-table th { background: #f8fafc; padding: 6px 4px; font-size: 11px; }
-        .cont-list-table td { padding: 4px; border: 1px solid #e2e8f0; }
-        .cont-list-table input, .cont-list-table select { width: 100%; padding: 6px; font-size: 12px; border: 1px solid transparent; border-radius: 4px; outline: none; box-sizing: border-box; }
+        .cont-list-table th { background: #f8fafc; padding: 4px 2px; font-size: 11px; text-align: center;}
+        .cont-list-table td { padding: 2px; border: 1px solid #e2e8f0; }
+        .cont-list-table input, .cont-list-table select { width: 100%; padding: 4px; font-size: 11px; border: 1px solid transparent; border-radius: 4px; outline: none; box-sizing: border-box; text-align: center;}
+        .cont-list-table input[type="date"] { padding: 4px 0px; font-size: 10px;}
         .cont-list-table input:focus { border-color: #0ea5e9; background: #f0f9ff; }
         
-        hr.dashed { margin: 6px 0; border: 0; border-top: 1px dashed #cbd5e1; }
+        hr.dashed { margin: 4px 0; border: 0; border-top: 1px dashed #cbd5e1; }
         .file-tag { background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; margin-top: 5px; border: 1px solid #e2e8f0; }
 
-        /* ========================================================
-           CSS CHUẨN HÓA ĐIỆN THOẠI (Mobile Responsive Card Layout)
-           ======================================================== */
+        /* Gộp ô cho Desktop & Mobile */
+        @media (min-width: 769px) { .hide-desktop { display: none !important; } }
+
+        /* Tùy chỉnh Modal tạo mới */
+        .option-card { border: 2px solid #e2e8f0; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: 0.2s; flex: 1; }
+        .option-card:hover { border-color: #0ea5e9; background: #f0f9ff; }
+        .option-card h4 { margin: 10px 0 5px 0; color: #0f172a; }
+        .option-card p { margin: 0; font-size: 12px; color: #64748b; }
+
         @media (max-width: 768px) {
-            body { padding: 10px; }
-            
-            /* Gộp Header */
+            body { padding: 8px; }
             .header-action { flex-direction: column; align-items: flex-start; }
             .search-wrapper { width: 100%; margin: 5px 0; }
             .header-action > div:last-child { width: 100%; display: flex; flex-wrap: wrap; gap: 5px; }
             .header-action button { flex: 1; min-width: 30%; font-size: 11px; padding: 8px; }
 
-            /* Bảng chính biến thành Card */
             .table-responsive { border: none; background: transparent; }
             .table-responsive table, .table-responsive thead, .table-responsive tbody, .table-responsive th, .table-responsive td, .table-responsive tr { display: block; width: 100%; }
-            .table-responsive thead { display: none; } /* Ẩn header trên đt */
+            .table-responsive thead { display: none; } 
             
-            .table-responsive tr { 
-                background: #fff; margin-bottom: 15px; border-radius: 8px; 
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; padding: 10px; 
-            }
-            .table-responsive td { 
-                display: flex; justify-content: space-between; align-items: flex-start; 
-                padding: 8px 0; border-bottom: 1px dashed #e2e8f0; text-align: right; white-space: normal; 
-            }
-            .table-responsive td:last-child { border-bottom: none; align-items: center; justify-content: center; margin-top: 10px;}
-            
-            /* Tiêu đề tự động (lấy từ data-label) */
-            .table-responsive td::before { 
-                content: attr(data-label); font-weight: 600; color: #475569; 
-                text-align: left; flex-shrink: 0; min-width: 90px; margin-right: 10px; 
-            }
+            .table-responsive tr { background: #fff; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; padding: 8px; }
+            .table-responsive td { display: flex; justify-content: space-between; align-items: flex-start; padding: 6px 0; border-bottom: 1px dashed #e2e8f0; text-align: right; white-space: normal; }
+            .table-responsive td:last-child { border-bottom: none; align-items: center; justify-content: center; margin-top: 8px;}
+            .table-responsive td::before { content: attr(data-label); font-weight: 600; color: #475569; text-align: left; flex-shrink: 0; min-width: 80px; margin-right: 8px; font-size: 12px;}
             
             .cell-group { align-items: flex-end; text-align: right; }
             .col-status { max-width: 100%; width: 100%; text-align: right; }
             .hide-mobile { display: none !important; }
 
-            /* Tối ưu Dòng Tổng Cộng cố định dưới đáy màn hình điện thoại */
-            .total-row { 
-                background: #0f172a; color: white; border-radius: 8px; padding: 15px; 
-                position: sticky; bottom: 10px; z-index: 100; display: block; 
-                box-shadow: 0 -4px 10px rgba(0,0,0,0.2); 
-            }
+            .total-row { background: #0f172a; color: white; border-radius: 8px; padding: 12px; position: sticky; bottom: 10px; z-index: 100; display: block; box-shadow: 0 -4px 10px rgba(0,0,0,0.2); }
             .total-row td { color: white !important; border: none; padding: 4px 0; align-items: center; }
             .total-row td::before { color: #94a3b8; }
             .total-row td:empty { display: none; }
 
-            /* Tối ưu Modal Form trên điện thoại */
             .modal-content { margin: 0; width: 100%; min-height: 100vh; border-radius: 0; padding: 15px; padding-top: 40px;}
             .close { position: fixed; right: 15px; top: 15px; background: #fff; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 26px; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
             .form-row { flex-direction: column; gap: 8px; margin-bottom: 8px; }
-            .form-group[style*="border-left"] { border-left: none !important; padding-left: 0 !important; border-top: 1px solid #cbd5e1; padding-top: 10px; margin-top: 5px; }
+            .form-group[style*="border-left"] { border-left: none !important; padding-left: 0 !important; border-top: 1px solid #cbd5e1; padding-top: 8px; margin-top: 4px; }
+            .option-card-container { flex-direction: column; }
         }
     </style>
 </head>
@@ -155,7 +142,7 @@
             <div style="display: flex; gap: 8px;">
                 <button class="btn btn-warning" onclick="openCheckDebtModal()">🔍 Check Nợ</button>
                 <button class="btn btn-secondary" onclick="openCarrierManagerModal()">🏭 Nhà Xe</button>
-                <button class="btn btn-primary" onclick="openBookingModalForAdd()">+ Tạo Mới</button>
+                <button class="btn btn-primary" onclick="openChooseTypeModal()">+ Tạo Mới</button>
             </div>
         </div>
     </div>
@@ -164,84 +151,114 @@
         <table>
             <thead>
                 <tr>
-                    <th class="text-center" style="width: 30px;">TT</th>
-                    <th style="width: 50px;">Ngày</th>
-                    <th>Nhà Xe</th>    
-                    <th>Booking / Khách hàng</th>
+                    <th class="text-center" style="width: 20px;">TT</th>
+                    <th>BOOKING</th>
+                    <th>NHÀ XE</th>
+                    <th style="width: 70px;">NGÀY</th>
                     <th>Thông tin Container</th>
-                    <th class="col-route">Lộ trình</th>
-                    <th class="text-right">Cước</th>
-                    <th class="text-right">Phát sinh</th>
-                    <th>Nâng hạ & Bãi</th>
-                    <th class="text-right">Tổng (VNĐ)</th>
                     <th class="col-status text-center">Trạng thái / Ghi chú</th>
-                    <th class="text-center" style="width: 80px;">Thao tác</th>
+                    <th class="text-center" style="width: 100px;">Thao tác</th>
                 </tr>
             </thead>
             <tbody id="table-body"></tbody>
             <tfoot>
                 <tr class="total-row">
-                    <td colspan="6" class="text-right hide-mobile" style="padding-right: 15px;">TỔNG CỘNG:</td>
-                    <td data-label="Tổng Cước:" class="text-right text-bold text-primary" id="sum-cost">0</td>
-                    <td data-label="Tổng Phát Sinh:" class="text-right text-bold text-danger" id="sum-extra">0</td>
-                    <td class="hide-mobile"></td>
-                    <td data-label="TỔNG (VNĐ):" class="text-right text-bold" style="color:#be185d; font-size:15px;" id="sum-total">0</td>
-                    <td colspan="2" class="hide-mobile"></td>
+                    <td colspan="6" class="text-right hide-mobile" style="padding-right: 15px;">TỔNG TIỀN TẤT CẢ GIAO DỊCH:</td>
+                    <td data-label="TỔNG (VNĐ):" class="text-center text-bold" style="color:#be185d; font-size:14px;" id="sum-total">0</td>
                 </tr>
             </tfoot>
         </table>
     </div>
 </div>
 
+<div id="chooseTypeModal" class="modal">
+    <div class="modal-content" style="max-width: 500px; min-height: auto;">
+        <span class="close" onclick="closeChooseTypeModal()">&times;</span>
+        <h3 style="margin-top: 0; color: #0f172a; text-align: center; margin-bottom: 20px;">Tùy chọn tạo Vận đơn</h3>
+        <div style="display: flex; gap: 15px;" class="option-card-container">
+            <div class="option-card" onclick="startCreateNew(true)">
+                <div style="font-size: 30px;">📑</div>
+                <h4>Cùng Booking</h4>
+                <p>Thêm dữ liệu vào Booking đã có sẵn</p>
+            </div>
+            <div class="option-card" onclick="startCreateNew(false)">
+                <div style="font-size: 30px;">🆕</div>
+                <h4>Khác Booking</h4>
+                <p>Tạo một Booking hoàn toàn mới</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="viewDetailModal" class="modal">
+    <div class="modal-content" style="max-width: 900px;">
+        <span class="close" onclick="closeViewDetailModal()">&times;</span>
+        <h3 style="margin-top: 0; color: #0f172a; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">Chi Tiết Vận Đơn</h3>
+        <div id="view-detail-content"></div>
+    </div>
+</div>
+
 <div id="bookingModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeBookingModal()">&times;</span>
-        <h3 id="modal-title" style="margin-top: 0; margin-bottom: 15px; color: #0f172a; font-size: 18px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">Thông Tin Vận Đơn</h3>
+        <h3 id="modal-title" style="margin-top: 0; margin-bottom: 10px; color: #0f172a; font-size: 16px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">Thông Tin Vận Đơn</h3>
         <input type="hidden" id="inp-id">
         
         <div class="form-row">
             <div class="form-group"><label>Nhà Xe</label><select id="inp-carrier-select"><option value="">-- Chọn --</option></select></div>
             <div class="form-group"><label>Khách hàng</label><input type="text" id="inp-customer" placeholder="Tên khách hàng"></div>
             <div class="form-group"><label>Người Handle</label><input type="text" id="inp-handler" placeholder="Nhân viên phụ trách"></div>
-            <div class="form-group"><label>Booking</label><input type="text" id="inp-booking" placeholder="Số Booking..."></div>
+            <div class="form-group">
+                <label>Booking</label>
+                <input type="text" id="inp-booking-text" placeholder="Nhập số Booking...">
+                <select id="inp-booking-select" style="display: none;"></select>
+            </div>
         </div>
 
-        <label style="font-weight:600; color:#334155; font-size: 12px; margin-bottom: 5px; display: block;">Danh sách Container:</label>
+        <label style="font-weight:600; color:#334155; font-size: 11px; margin-bottom: 4px; display: block;">Danh sách Container:</label>
         <div class="cont-list-container">
             <table class="cont-list-table">
                 <thead>
                     <tr>
-                        <th>Số Xe</th>
-                        <th>Số Cont</th>
-                        <th>Loại</th>
-                        <th>Nghiệp vụ</th>
-                        <th>Nơi đi</th>
-                        <th>Nơi đến</th>
-                        <th>Đơn giá</th>
-                        <th>Phát sinh</th>
-                        <th>CP Nâng hạ</th>
-                        <th>Bãi Rỗng</th>
-                        <th style="text-align: center;">#</th>
+                        <th style="width: 8%;">Số Xe</th>
+                        <th style="width: 10%;">Số Cont</th>
+                        <th style="width: 6%;">Loại</th>
+                        <th style="width: 8%;">Nghiệp vụ</th>
+                        <th style="width: 9%;">Nơi đi</th>
+                        <th style="width: 9%;">Nơi đến</th>
+                        <th style="width: 8%;">Ngày đóng</th>
+                        <th style="width: 8%;">Ngày giao</th>
+                        <th style="width: 8%;">Ngày xuất</th>
+                        <th style="width: 7%;">Đơn giá</th>
+                        <th style="width: 6%;">Phát sinh</th>
+                        <th style="width: 6%;">Nâng hạ</th>
+                        <th style="width: 6%;">Bãi Rỗng</th>
+                        <th style="width: 1%;">#</th>
                     </tr>
                 </thead>
                 <tbody id="cont-list-body"></tbody>
             </table>
         </div>
-        <button type="button" class="btn btn-sm btn-success" onclick="addContRow()" style="margin-bottom: 15px;">+ Thêm dòng Cont</button>
+        <button type="button" class="btn btn-sm btn-success" onclick="addContRow()" style="margin-bottom: 10px;">+ Thêm dòng Cont</button>
 
-        <div style="background: #f8fafc; padding: 12px; border-radius: 6px; margin-bottom: 12px; border: 1px solid #e2e8f0;">
+        <div style="background: #f8fafc; padding: 10px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #e2e8f0;">
             <div class="form-row" style="margin-bottom: 0;">
                 <div class="form-group"><label style="color: #059669;">Doanh thu (Thu khách)</label><input type="number" id="inp-revenue" placeholder="0 đ"></div>
                 <div class="form-group"><label>Ghi chú đơn hàng</label><input type="text" id="inp-notes" placeholder="Ghi chú thêm..."></div>
                 <div class="form-group" style="border-left: 1px solid #cbd5e1; padding-left: 15px;">
                     <label>Hóa Đơn Nâng Hạ (Chung)</label>
-                    <input type="file" id="inp-lifting-file" accept="image/*,.pdf" style="font-size:11px;">
+                    <div style="display: flex; gap: 5px; align-items: center;">
+                        <input type="file" id="inp-lifting-file" accept="image/*,.pdf" style="font-size:11px; flex: 1;">
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('inp-lifting-camera').click()" title="Mở máy ảnh">📷 Chụp</button>
+                        <input type="file" id="inp-lifting-camera" accept="image/*" capture="environment" style="display:none;">
+                    </div>
+                    <div id="lifting-camera-display" style="margin-top: 5px;"></div>
                     <div id="lifting-file-display"></div>
                 </div>
             </div>
         </div>
         
-        <div style="background: #fffbeb; padding: 12px; border-radius: 6px; border: 1px solid #fde68a; margin-bottom: 15px;">
+        <div style="background: #fffbeb; padding: 10px; border-radius: 6px; border: 1px solid #fde68a; margin-bottom: 10px;">
             <div class="form-group" style="margin-bottom: 0;">
                 <label style="color: #b45309;">Trạng thái thanh toán</label>
                 <select id="inp-status" style="font-weight: bold; background: #fff;" onchange="toggleInvoiceSection()">
@@ -249,14 +266,19 @@
                     <option value="paid" style="color: #166534;">✅ Đã thanh toán</option>
                 </select>
             </div>
-            <div id="invoice-upload-section" style="margin-top: 10px; display: none; border-top: 1px dashed #fcd34d; padding-top: 10px;">
-                <label style="color: #6d28d9; font-size: 12px; font-weight: 600; display: block; margin-bottom: 5px;">📎 Hóa Đơn Thanh Toán (Có thể chọn nhiều)</label>
-                <input type="file" id="inp-invoice-file" multiple accept="image/*,.pdf,.doc,.docx" style="font-size: 12px; background: #fff;">
+            <div id="invoice-upload-section" style="margin-top: 8px; display: none; border-top: 1px dashed #fcd34d; padding-top: 8px;">
+                <label style="color: #6d28d9; font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px;">📎 Hóa Đơn Thanh Toán (Có thể chọn/chụp nhiều ảnh)</label>
+                <div style="display: flex; gap: 5px; align-items: center;">
+                    <input type="file" id="inp-invoice-file" multiple accept="image/*,.pdf,.doc,.docx" style="font-size: 11px; background: #fff; flex: 1;">
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('inp-invoice-camera').click()" title="Mở máy ảnh">📷 Chụp</button>
+                    <input type="file" id="inp-invoice-camera" accept="image/*" capture="environment" style="display:none;">
+                </div>
+                <div id="pending-photos-area" style="margin-top: 5px;"></div>
                 <div id="file-list-area" style="margin-top: 5px;"></div>
             </div>
         </div>
 
-        <button id="btn-save-booking" class="btn btn-primary" style="width: 100%; padding: 10px 15px; font-size: 14px;" onclick="saveBooking()">Lưu Booking</button>
+        <button id="btn-save-booking" class="btn btn-primary" style="width: 100%; padding: 8px 15px; font-size: 13px;" onclick="saveBooking()">Lưu Booking</button>
     </div>
 </div>
 
@@ -264,11 +286,11 @@
     <div class="modal-content" style="max-width: 800px;">
         <span class="close" onclick="closeCheckDebtModal()">&times;</span>
         <h3 style="margin-top: 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">🔍 Tra Cứu Công Nợ</h3>
-        <select id="sel-debt-carrier" onchange="filterDebtByCarrier()" style="width: 100%; padding: 10px; margin-bottom: 15px; font-size: 13px; border: 1px solid #cbd5e1; border-radius: 6px;"><option value="">-- Chọn nhà xe để tra cứu --</option></select>
+        <select id="sel-debt-carrier" onchange="filterDebtByCarrier()" style="width: 100%; padding: 8px; margin-bottom: 10px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px;"><option value="">-- Chọn nhà xe để tra cứu --</option></select>
         <div class="table-responsive" style="border:none;">
             <table style="width: 100%; min-width: max-content;"><thead><tr><th>Ngày</th><th>Booking</th><th>Số Cont</th><th class="text-right">Tổng phải trả</th><th class="text-center">Thao tác</th></tr></thead><tbody id="debt-table-body"></tbody></table>
         </div>
-        <div style="text-align: right; font-weight: bold; margin-top: 15px; font-size: 16px;">TỔNG NỢ: <span id="debt-modal-total" style="color: #e11d48;">0 đ</span></div>
+        <div style="text-align: right; font-weight: bold; margin-top: 10px; font-size: 15px;">TỔNG NỢ: <span id="debt-modal-total" style="color: #e11d48;">0 đ</span></div>
     </div>
 </div>
 
@@ -302,6 +324,8 @@
     let cachedData = []; 
     let currentInvoices = [];
     let currentLiftingInvoice = null;
+    let extraInvoicePhotos = []; 
+    let isCreatingSameBooking = false; 
 
     function showLoading() { loadingEl.style.display = "flex"; }
     function hideLoading() { loadingEl.style.display = "none"; }
@@ -311,6 +335,18 @@
         const d = new Date(isoString);
         return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}`;
     }
+    const formatCustomDate = (dStr) => {
+        if(!dStr) return '-';
+        const p = dStr.split('-');
+        if(p.length===3) return `${p[2]}/${p[1]}`;
+        return dStr;
+    }
+    const formatCustomDateFull = (dStr) => {
+        if(!dStr) return '-';
+        const p = dStr.split('-');
+        if(p.length===3) return `${p[2]}/${p[1]}/${p[0]}`;
+        return dStr;
+    }
     const fmtMoney = (num) => new Intl.NumberFormat('vi-VN').format(num || 0);
 
     function toggleInvoiceSection() {
@@ -319,11 +355,55 @@
     }
 
     function toggleInputs(disabled) {
-        const ids = ['inp-carrier-select', 'inp-customer', 'inp-handler', 'inp-booking', 'inp-revenue', 'inp-notes'];
+        const ids = ['inp-carrier-select', 'inp-customer', 'inp-handler', 'inp-booking-text', 'inp-booking-select', 'inp-revenue', 'inp-notes'];
         ids.forEach(id => { document.getElementById(id).disabled = disabled; });
         const rowInputs = document.querySelectorAll('.cont-list-table input, .cont-list-table select');
         rowInputs.forEach(i => i.disabled = disabled);
     }
+
+    // Xử lý File và Camera
+    document.getElementById('inp-lifting-camera').addEventListener('change', function() {
+        if(this.files.length > 0) {
+            document.getElementById('lifting-camera-display').innerHTML = `
+                <div class="file-tag" style="background:#fef3c7; border-color:#fde68a;">
+                    <span style="color:#d97706;">📷 Vừa chụp: ${this.files[0].name}</span>
+                    <span onclick="document.getElementById('inp-lifting-camera').value=''; document.getElementById('lifting-camera-display').innerHTML=''" style="cursor:pointer; color:#ef4444; font-weight:bold; margin-left:5px;">✕</span>
+                </div>`;
+        }
+    });
+
+    document.getElementById('inp-invoice-camera').addEventListener('change', function() {
+        if(this.files.length > 0) {
+            extraInvoicePhotos.push(this.files[0]);
+            renderExtraPhotos();
+            this.value = ""; 
+        }
+    });
+
+    function renderExtraPhotos() {
+        const area = document.getElementById('pending-photos-area');
+        area.innerHTML = extraInvoicePhotos.map((file, idx) => `
+            <div class="file-tag" style="background:#fef3c7; border-color:#fde68a; display:block; margin-bottom:4px;">
+                <span style="color:#d97706;">📷 Mới chụp: ${file.name}</span>
+                <span onclick="removeExtraPhoto(${idx})" style="cursor:pointer; color:#ef4444; font-weight:bold; margin-left:10px; float:right;">✕</span>
+            </div>`).join('');
+    }
+
+    function removeExtraPhoto(idx) { extraInvoicePhotos.splice(idx, 1); renderExtraPhotos(); }
+
+    document.getElementById('inp-booking-select').addEventListener('change', function() {
+        const selectedBooking = this.value;
+        if(selectedBooking) {
+            const existingData = cachedData.find(d => d.booking === selectedBooking);
+            if(existingData) {
+                document.getElementById('inp-customer').value = existingData.customer || '';
+                document.getElementById('inp-handler').value = existingData.handler || '';
+            }
+        } else {
+            document.getElementById('inp-customer').value = '';
+            document.getElementById('inp-handler').value = '';
+        }
+    });
 
     function addContRow(data = {}) {
         const tbody = document.getElementById('cont-list-body');
@@ -331,19 +411,23 @@
         const v = {
             vehicle: data.vehicle || '', contNo: data.contNo || '', contType: data.contType || '20F',
             operation: data.operation || '', origin: data.origin || '', destination: data.destination || '',
+            packingDate: data.packingDate || '', deliveryDate: data.deliveryDate || '', exportDate: data.exportDate || '',
             cost: data.cost || '', extraCost: data.extraCost || '', liftingCost: data.liftingCost || '', emptyDepot: data.emptyDepot || ''
         };
         row.innerHTML = `
-            <td><input type="text" class="inp-vehicle" value="${v.vehicle}" placeholder="BS Xe"></td>
-            <td><input type="text" class="inp-contNo" value="${v.contNo}" placeholder="Mã Cont"></td>
+            <td><input type="text" class="inp-vehicle" value="${v.vehicle}" placeholder="Xe"></td>
+            <td><input type="text" class="inp-contNo" value="${v.contNo}" placeholder="Cont"></td>
             <td><select class="inp-contType"><option value="20F" ${v.contType==='20F'?'selected':''}>20F</option><option value="40F" ${v.contType==='40F'?'selected':''}>40F</option></select></td>
-            <td><input type="text" class="inp-operation" value="${v.operation}" placeholder="Nhập/Xuất"></td>
-            <td><input type="text" class="inp-origin" value="${v.origin}" placeholder="Điểm đi"></td>
-            <td><input type="text" class="inp-destination" value="${v.destination}" placeholder="Điểm đến"></td>
+            <td><input type="text" class="inp-operation" value="${v.operation}" placeholder="N/X"></td>
+            <td><input type="text" class="inp-origin" value="${v.origin}" placeholder="Đi"></td>
+            <td><input type="text" class="inp-destination" value="${v.destination}" placeholder="Đến"></td>
+            <td><input type="date" class="inp-packingDate" value="${v.packingDate}"></td>
+            <td><input type="date" class="inp-deliveryDate" value="${v.deliveryDate}"></td>
+            <td><input type="date" class="inp-exportDate" value="${v.exportDate}"></td>
             <td><input type="number" class="inp-cost" value="${v.cost}" placeholder="0"></td>
             <td><input type="number" class="inp-extraCost" value="${v.extraCost}" placeholder="0"></td>
             <td><input type="number" class="inp-liftingCost" value="${v.liftingCost}" placeholder="0"></td>
-            <td><input type="text" class="inp-emptyDepot" value="${v.emptyDepot}" placeholder="Tên bãi"></td>
+            <td><input type="text" class="inp-emptyDepot" value="${v.emptyDepot}" placeholder="Bãi"></td>
             <td style="text-align:center;"><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">✕</button></td>
         `;
         tbody.appendChild(row);
@@ -362,6 +446,7 @@
                 vehicle: row.querySelector('.inp-vehicle').value, contNo: row.querySelector('.inp-contNo').value,
                 contType: row.querySelector('.inp-contType').value, operation: row.querySelector('.inp-operation').value,
                 origin: row.querySelector('.inp-origin').value, destination: row.querySelector('.inp-destination').value,
+                packingDate: row.querySelector('.inp-packingDate').value, deliveryDate: row.querySelector('.inp-deliveryDate').value, exportDate: row.querySelector('.inp-exportDate').value,
                 cost: cost, extraCost: extra, liftingCost: lifting, emptyDepot: row.querySelector('.inp-emptyDepot').value
             });
         });
@@ -371,59 +456,227 @@
     function renderTable(data) {
         const tableBody = document.getElementById('table-body');
         tableBody.innerHTML = "";
-        let sCost = 0, sExtra = 0, sTotal = 0, sLifting = 0;
-        if (data.length === 0) { tableBody.innerHTML = `<tr><td colspan="12" class="text-center" style="padding: 20px;">Không tìm thấy dữ liệu</td></tr>`; return; }
+        let sTotal = 0;
+        if (data.length === 0) { tableBody.innerHTML = `<tr><td colspan="7" class="text-center" style="padding: 20px;">Không tìm thấy dữ liệu</td></tr>`; return; }
         
-        data.forEach((item, index) => {
-            const cost = Number(item.cost) || 0; const extra = Number(item.extraCost) || 0; const lifting = Number(item.liftingCost) || 0;
-            const total = cost + extra; 
-            sCost += cost; sExtra += extra; sTotal += total; sLifting += lifting;
-            
-            const c = item.containers || [];
-            
-            const bookingGroup = `<div class="cell-group"><span class="text-bold text-primary">${item.booking}</span><span class="text-muted">👤 ${item.customer || '-'} | 🧑‍💻 ${item.handler || '-'}</span></div>`;
-            const contGroup = c.map(x => `<div class="cell-group"><span class="text-bold">${x.contNo || '...'} <span class="text-muted">(${x.contType || '-'})</span></span><span class="text-muted">🚚 ${x.vehicle || '-'} | 📌 ${x.operation || '-'}</span></div>`).join('<hr class="dashed">');
-            const routeGroup = c.map(x => `<div class="cell-group" style="justify-content:center; min-height:30px;"><span>${x.origin || '...'} <strong style="color:#0ea5e9;">➔</strong> ${x.destination || '...'}</span></div>`).join('<hr class="dashed">');
-            const costGroup = c.map(x => `<div class="cell-group" style="min-height:30px; justify-content:center;">${fmtMoney(x.cost)}</div>`).join('<hr class="dashed">');
-            const extraGroup = c.map(x => `<div class="cell-group" style="min-height:30px; justify-content:center;">${fmtMoney(x.extraCost)}</div>`).join('<hr class="dashed">');
-            const liftingGroup = c.map(x => `<div class="cell-group" style="min-height:30px; justify-content:center;"><span class="text-bold">${fmtMoney(x.liftingCost)}</span><span class="text-muted" style="font-size: 10px;">Bãi: ${x.emptyDepot || '-'}</span></div>`).join('<hr class="dashed">');
-            
-            const statusHtml = item.paymentStatus === 'paid' ? `<span class="status-badge status-paid">Đã TT</span>` : `<span class="status-badge status-unpaid">Chưa TT</span>`;
-            const statusGroup = `<div class="cell-group" style="align-items:center;">${statusHtml}<span class="text-muted" style="font-style:italic; margin-top:4px;">${item.notes || ''}</span></div>`;
-            
-            let btns = item.paymentStatus === 'paid' 
-                ? `<button class="btn btn-sm btn-secondary" style="width:100%;" onclick="openEditByIndex(${index})">📝 Sửa/File</button>`
-                : `<div style="display:flex; gap:4px; justify-content:center;"><button class="btn btn-sm btn-warning" onclick="openEditByIndex(${index})">Sửa</button><button class="btn btn-sm btn-danger" onclick="deleteItem('${item._id}')">Xóa</button></div>`;
+        const map = new Map();
+        const sortedData = [...data].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-            // Thêm thẻ data-label để hỗ trợ hiển thị trên Mobile
-            tableBody.innerHTML += `
-                <tr>
-                    <td data-label="TT:" class="text-center">${index + 1}</td>
-                    <td data-label="Ngày:" class="text-muted">${formatDateShort(item.createdAt)}</td>
-                    <td data-label="Nhà Xe:" class="text-bold">${item.carrier || '-'}</td> 
-                    <td data-label="Booking/KH:">${bookingGroup}</td>
-                    <td data-label="Container:">${contGroup}</td>
-                    <td data-label="Lộ trình:" class="col-route">${routeGroup}</td>
-                    <td data-label="Cước:" class="text-right text-bold">${costGroup}</td>
-                    <td data-label="Phát sinh:" class="text-right">${extraGroup}</td>
-                    <td data-label="Nâng hạ/Bãi:">${liftingGroup}</td>
-                    <td data-label="Tổng (VNĐ):" class="text-right text-bold text-danger" style="font-size:13px; vertical-align:middle;">${fmtMoney(total)}</td>
-                    <td data-label="Trạng thái:" class="col-status text-center">${statusGroup}</td>
-                    <td data-label="Thao tác:" class="text-center" style="vertical-align:middle;">${btns}</td>
-                </tr>`;
+        sortedData.forEach(item => {
+            if (!map.has(item.booking)) {
+                map.set(item.booking, { booking: item.booking, customer: item.customer, handler: item.handler, carrier: item.carrier, records: [] });
+            }
+            map.get(item.booking).records.push(item);
         });
-        document.getElementById('sum-cost').innerText = fmtMoney(sCost); document.getElementById('sum-extra').innerText = fmtMoney(sExtra);
+
+        let globalIndex = 1;
+        
+        Array.from(map.values()).forEach(group => {
+            group.records.sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+            const rowSpan = group.records.length;
+            const bookingGroup = `<div class="cell-group"><span class="text-bold text-primary" style="font-size:13px;">${group.booking}</span><span class="text-muted">👤 ${group.customer || '-'} | 🧑‍💻 ${group.handler || '-'}</span></div>`;
+            
+            group.records.forEach((record, rIdx) => {
+                const cost = Number(record.cost) || 0; const extra = Number(record.extraCost) || 0; 
+                sTotal += (cost + extra); 
+
+                const dateHtml = `<div class="cell-group"><span class="text-bold">${formatDateShort(record.createdAt)}</span></div>`;
+
+                const c = record.containers || [];
+                const contGroup = c.map(x => {
+                    let dText = [];
+                    if(x.packingDate) dText.push(`<span style="color:#0ea5e9;">Đ: ${formatCustomDate(x.packingDate)}</span>`);
+                    if(x.deliveryDate) dText.push(`<span style="color:#10b981;">G: ${formatCustomDate(x.deliveryDate)}</span>`);
+                    if(x.exportDate) dText.push(`<span style="color:#f59e0b;">X: ${formatCustomDate(x.exportDate)}</span>`);
+                    let dHtml = dText.length > 0 ? `<div style="font-size:10px; margin-top:1px;">${dText.join(' | ')}</div>` : '';
+
+                    return `<div class="cell-group" style="min-height:28px; justify-content:center;">
+                        <span class="text-bold">${x.contNo || '...'} <span class="text-muted">(${x.contType || '-'})</span></span>
+                        <span class="text-muted">🚚 ${x.vehicle || '-'} | 📌 ${x.operation || '-'}</span>
+                        ${dHtml}
+                    </div>`;
+                }).join('<hr class="dashed">');
+
+                const statusHtml = record.paymentStatus === 'paid' ? `<span class="status-badge status-paid">Đã TT</span>` : `<span class="status-badge status-unpaid">Chưa TT</span>`;
+                const statusGroup = `<div class="cell-group" style="align-items:center;">${statusHtml}<span class="text-muted" style="font-style:italic; margin-top:2px;">${record.notes || ''}</span></div>`;
+                
+                const origIndex = cachedData.findIndex(d => d._id === record._id);
+
+                let btns = `<button class="btn btn-sm btn-info" onclick="viewDetailsModal(${origIndex})" style="width:100%; margin-bottom:2px;">👁️ Chi tiết</button>`;
+                if(record.paymentStatus === 'paid') {
+                    btns += `<button class="btn btn-sm btn-secondary" style="width:100%;" onclick="openEditByIndex(${origIndex})">📝 Sửa</button>`;
+                } else {
+                    btns += `<div style="display:flex; gap:2px; justify-content:center;"><button class="btn btn-sm btn-warning" onclick="openEditByIndex(${origIndex})" style="flex:1;">Sửa</button><button class="btn btn-sm btn-danger" onclick="deleteItem('${record._id}')" style="flex:1;">Xóa</button></div>`;
+                }
+
+                let trStyle = "";
+                if (rIdx === 0) {
+                    trStyle = "border-top: 2px solid #94a3b8;"; 
+                } else {
+                    const prevDate = new Date(group.records[rIdx - 1].createdAt).toDateString();
+                    const currDate = new Date(record.createdAt).toDateString();
+                    if (prevDate !== currDate) {
+                        trStyle = "border-top: 2px dashed #94a3b8;"; 
+                    } else {
+                        trStyle = "border-top: 1px solid #e2e8f0;"; 
+                    }
+                }
+
+                if (rIdx === 0) {
+                    tableBody.innerHTML += `
+                        <tr style="${trStyle}">
+                            <td data-label="TT:" class="text-center" rowspan="${rowSpan}">${globalIndex}</td>
+                            <td data-label="BOOKING:" rowspan="${rowSpan}">${bookingGroup}</td>
+                            <td data-label="NHÀ XE:" class="text-bold" rowspan="${rowSpan}">${group.carrier || '-'}</td> 
+                            <td data-label="NGÀY:">${dateHtml}</td>
+                            <td data-label="Container:">${contGroup}</td>
+                            <td data-label="Trạng thái:" class="col-status text-center">${statusGroup}</td>
+                            <td data-label="Thao tác:" class="text-center" style="vertical-align:middle;">${btns}</td>
+                        </tr>`;
+                } else {
+                    tableBody.innerHTML += `
+                        <tr style="${trStyle}">
+                            <td data-label="TT:" class="text-center hide-desktop">${globalIndex}</td>
+                            <td data-label="BOOKING:" class="hide-desktop">${bookingGroup}</td>
+                            <td data-label="NHÀ XE:" class="text-bold hide-desktop">${group.carrier || '-'}</td> 
+                            <td data-label="NGÀY:">${dateHtml}</td>
+                            <td data-label="Container:">${contGroup}</td>
+                            <td data-label="Trạng thái:" class="col-status text-center">${statusGroup}</td>
+                            <td data-label="Thao tác:" class="text-center" style="vertical-align:middle;">${btns}</td>
+                        </tr>`;
+                }
+            });
+            globalIndex++;
+        });
+        
         document.getElementById('sum-total').innerText = fmtMoney(sTotal); 
     }
 
-    function openBookingModalForAdd() {
-        document.getElementById('inp-id').value = ""; toggleInputs(false);
-        const inputs = document.querySelectorAll('#bookingModal input, #bookingModal select');
-        inputs.forEach(i => { if(i.id !== 'btn-save-booking') i.value = ""; });
+    function viewDetailsModal(index) {
+        const item = cachedData[index]; if(!item) return;
+        
+        let html = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px; background:#f8fafc; padding:10px; border-radius:6px; border:1px solid #e2e8f0; flex-wrap:wrap; gap:8px;">
+                <div><span class="text-muted">Khách hàng:</span> <strong style="color:#0ea5e9">${item.customer || '-'}</strong></div>
+                <div><span class="text-muted">Booking:</span> <strong>${item.booking}</strong></div>
+                <div><span class="text-muted">Người Handle:</span> <strong>${item.handler || '-'}</strong></div>
+            </div>
+            
+            <div class="table-responsive" style="border:1px solid #e2e8f0;">
+                <table style="width:100%;">
+                    <thead style="background:#f1f5f9;">
+                        <tr>
+                            <th>Container</th>
+                            <th>Nghiệp vụ</th>
+                            <th>Lộ trình</th>
+                            <th>Ngày (Đ/G/X)</th>
+                            <th class="text-right">Đơn giá</th>
+                            <th class="text-right">Phát sinh</th>
+                            <th class="text-right">Nâng hạ</th>
+                            <th>Bãi rỗng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        let totalC = 0, totalE = 0;
+        (item.containers || []).forEach(c => {
+            const cst = Number(c.cost)||0; const ext = Number(c.extraCost)||0; const lft = Number(c.liftingCost)||0;
+            totalC += cst; totalE += ext;
+            
+            let dates = [];
+            if(c.packingDate) dates.push(`Đ: ${formatCustomDateFull(c.packingDate)}`);
+            if(c.deliveryDate) dates.push(`G: ${formatCustomDateFull(c.deliveryDate)}`);
+            if(c.exportDate) dates.push(`X: ${formatCustomDateFull(c.exportDate)}`);
+            let datesStr = dates.length > 0 ? dates.join('<br>') : '-';
+
+            html += `
+                <tr>
+                    <td data-label="Container:"><strong>${c.contNo||'-'} (${c.contType||'-'})</strong><br><span class="text-muted">${c.vehicle||'-'}</span></td>
+                    <td data-label="Nghiệp vụ:">${c.operation||'-'}</td>
+                    <td data-label="Lộ trình:">${c.origin||'-'} <strong style="color:#0ea5e9;">➔</strong> ${c.destination||'-'}</td>
+                    <td data-label="Ngày:">${datesStr}</td>
+                    <td data-label="Đơn giá:" class="text-right">${fmtMoney(cst)}</td>
+                    <td data-label="Phát sinh:" class="text-right text-danger">${fmtMoney(ext)}</td>
+                    <td data-label="Nâng hạ:" class="text-right">${fmtMoney(lft)}</td>
+                    <td data-label="Bãi rỗng:">${c.emptyDepot||'-'}</td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="display:flex; justify-content:flex-end; margin-top:12px; font-size:15px; align-items:center; gap:12px; background:#fffbeb; padding:12px; border-radius:8px; border:1px solid #fde68a; flex-wrap:wrap;">
+                <div>Tổng Doanh Thu: <span style="color:#059669; font-weight:bold;">${fmtMoney(item.revenue)} đ</span></div>
+                <div class="hide-mobile" style="height:25px; width:2px; background:#fcd34d;"></div>
+                <div>TỔNG CHI PHÍ: <span style="color:#e11d48; font-weight:bold; font-size:18px;">${fmtMoney(totalC + totalE)} đ</span></div>
+            </div>
+        `;
+        
+        document.getElementById('view-detail-content').innerHTML = html;
+        document.getElementById('viewDetailModal').style.display = 'block';
+    }
+    function closeViewDetailModal() { document.getElementById('viewDetailModal').style.display = 'none'; }
+
+    function openChooseTypeModal() {
+        document.getElementById('chooseTypeModal').style.display = 'block';
+    }
+    function closeChooseTypeModal() {
+        document.getElementById('chooseTypeModal').style.display = 'none';
+    }
+
+    function populateBookingSelect() {
+        const selBooking = document.getElementById('inp-booking-select');
+        const uniqueBookings = [];
+        const seen = new Set();
+        cachedData.forEach(item => {
+            if (item.booking && !seen.has(item.booking)) {
+                seen.add(item.booking);
+                uniqueBookings.push(item.booking);
+            }
+        });
+        selBooking.innerHTML = '<option value="">-- Chọn Booking đã có --</option>' + 
+            uniqueBookings.map(b => `<option value="${b}">${b}</option>`).join('');
+    }
+
+    function startCreateNew(isSameBooking) {
+        isCreatingSameBooking = isSameBooking;
+        closeChooseTypeModal();
+        
+        document.getElementById('inp-id').value = ""; 
+        toggleInputs(false);
+        const inputs = document.querySelectorAll('#bookingModal input[type="text"], #bookingModal input[type="number"], #bookingModal select');
+        inputs.forEach(i => { if(i.id !== 'inp-status' && i.id !== 'inp-booking-select') i.value = ""; });
+        
+        const txtBooking = document.getElementById('inp-booking-text');
+        const selBooking = document.getElementById('inp-booking-select');
+
+        if (isSameBooking) {
+            txtBooking.style.display = 'none';
+            selBooking.style.display = 'block';
+            populateBookingSelect();
+        } else {
+            txtBooking.style.display = 'block';
+            selBooking.style.display = 'none';
+        }
+
         document.getElementById('cont-list-body').innerHTML = ""; addContRow();
-        document.getElementById('inp-status').value = "unpaid"; document.getElementById('file-list-area').innerHTML = ""; document.getElementById('lifting-file-display').innerHTML = "";
-        currentInvoices = []; currentLiftingInvoice = null; toggleInvoiceSection();
-        document.getElementById('modal-title').innerText = "Tạo Vận Đơn Mới";
+        document.getElementById('inp-status').value = "unpaid"; 
+        
+        document.getElementById('file-list-area').innerHTML = ""; 
+        document.getElementById('lifting-file-display').innerHTML = "";
+        document.getElementById('lifting-camera-display').innerHTML = "";
+        document.getElementById('pending-photos-area').innerHTML = "";
+        document.getElementById('inp-lifting-camera').value = "";
+        document.getElementById('inp-invoice-camera').value = "";
+        extraInvoicePhotos = [];
+        currentInvoices = []; currentLiftingInvoice = null; 
+
+        toggleInvoiceSection();
+        document.getElementById('modal-title').innerText = isSameBooking ? "Thêm Dữ Liệu (Cùng Booking)" : "Tạo Vận Đơn Mới";
         document.getElementById('btn-save-booking').innerText = "Lưu Vận Đơn"; document.getElementById('btn-save-booking').className = "btn btn-success";
         document.getElementById('bookingModal').style.display = "block";
         if(document.getElementById('inp-carrier-select').options.length <= 1) loadCarriersToSelect();
@@ -431,18 +684,34 @@
 
     function openEditByIndex(index, isProcessMode = false) {
         const item = cachedData[index]; if(!item) return;
+        isCreatingSameBooking = false; 
+
         document.getElementById('inp-id').value = item._id; document.getElementById('inp-carrier-select').value = item.carrier;
         document.getElementById('inp-customer').value = item.customer || ''; document.getElementById('inp-handler').value = item.handler || '';
-        document.getElementById('inp-booking').value = item.booking; document.getElementById('inp-notes').value = item.notes || '';
+        
+        document.getElementById('inp-booking-text').value = item.booking;
+        document.getElementById('inp-booking-text').style.display = 'block';
+        document.getElementById('inp-booking-select').style.display = 'none';
+
+        document.getElementById('inp-notes').value = item.notes || '';
         
         const tbody = document.getElementById('cont-list-body'); tbody.innerHTML = "";
         if (item.containers && item.containers.length > 0) item.containers.forEach(c => addContRow(c)); else addContRow();
         
         document.getElementById('inp-revenue').value = item.revenue; document.getElementById('inp-status').value = item.paymentStatus;
+        
+        extraInvoicePhotos = [];
+        document.getElementById('pending-photos-area').innerHTML = "";
+        document.getElementById('lifting-camera-display').innerHTML = "";
+        document.getElementById('inp-lifting-camera').value = "";
+        document.getElementById('inp-invoice-camera').value = "";
+        document.getElementById('inp-invoice-file').value = ""; 
+        document.getElementById('inp-lifting-file').value = "";
+
         currentInvoices = item.invoices || []; renderFileList(currentInvoices, item._id);
         currentLiftingInvoice = item.liftingInvoice; renderLiftingFile(currentLiftingInvoice, item._id);
         
-        toggleInvoiceSection(); document.getElementById('inp-invoice-file').value = ""; document.getElementById('inp-lifting-file').value = "";
+        toggleInvoiceSection(); 
         
         if (isProcessMode || item.paymentStatus === 'paid') {
             toggleInputs(true);
@@ -457,17 +726,29 @@
     }
 
     async function saveBooking() {
-        const id = document.getElementById('inp-id').value; const carrier = document.getElementById('inp-carrier-select').value; const booking = document.getElementById('inp-booking').value;
+        const id = document.getElementById('inp-id').value; const carrier = document.getElementById('inp-carrier-select').value; 
+        
+        let booking = "";
+        if (!id && isCreatingSameBooking) booking = document.getElementById('inp-booking-select').value;
+        else booking = document.getElementById('inp-booking-text').value;
+
         if(!carrier || !booking) { alert("Vui lòng nhập Nhà xe và Số Booking!"); return; }
+        
         const contData = getContListFromTable(); const formData = new FormData();
         formData.append('carrier', carrier); formData.append('customer', document.getElementById('inp-customer').value);
         formData.append('handler', document.getElementById('inp-handler').value); formData.append('booking', booking); formData.append('notes', document.getElementById('inp-notes').value);
+        
         formData.append('containersList', JSON.stringify(contData.list)); formData.append('cost', contData.totalCost); formData.append('extraCost', contData.totalExtra); formData.append('liftingCost', contData.totalLifting);
         formData.append('revenue', document.getElementById('inp-revenue').value); formData.append('paymentStatus', document.getElementById('inp-status').value);
         
-        const fileInput = document.getElementById('inp-invoice-file'); const liftingFileInput = document.getElementById('inp-lifting-file');
-        for (let i = 0; i < fileInput.files.length; i++) formData.append('invoiceFiles', fileInput.files[i]);
+        const liftingFileInput = document.getElementById('inp-lifting-file');
+        const liftingCameraInput = document.getElementById('inp-lifting-camera');
         if (liftingFileInput.files.length > 0) formData.append('liftingInvoiceFile', liftingFileInput.files[0]);
+        else if (liftingCameraInput.files.length > 0) formData.append('liftingInvoiceFile', liftingCameraInput.files[0]);
+        
+        const fileInput = document.getElementById('inp-invoice-file');
+        for (let i = 0; i < fileInput.files.length; i++) formData.append('invoiceFiles', fileInput.files[i]);
+        extraInvoicePhotos.forEach(file => formData.append('invoiceFiles', file));
         
         showLoading();
         try { 
@@ -537,7 +818,13 @@
     async function deleteCarrier(id) { if(confirm("Xóa nhà xe này?")) { await fetch(`${API_URL}/carriers/${id}`, {method:'DELETE'}); openCarrierManagerModal(); } }
     async function deleteItem(id) { if(confirm("Xóa dòng vận đơn này? Dữ liệu không thể khôi phục!")) { await fetch(`${API_URL}/trucking/${id}`, {method:'DELETE'}); fetchAndRender(); } }
 
-    window.onclick = function(e) { if(e.target == document.getElementById('bookingModal')) closeBookingModal(); if(e.target == document.getElementById('checkDebtModal')) closeCheckDebtModal(); if(e.target == document.getElementById('carrierListModal')) closeCarrierManagerModal(); }
+    window.onclick = function(e) { 
+        if(e.target == document.getElementById('bookingModal')) closeBookingModal(); 
+        if(e.target == document.getElementById('checkDebtModal')) closeCheckDebtModal(); 
+        if(e.target == document.getElementById('carrierListModal')) closeCarrierManagerModal(); 
+        if(e.target == document.getElementById('viewDetailModal')) closeViewDetailModal();
+        if(e.target == document.getElementById('chooseTypeModal')) closeChooseTypeModal();
+    }
     loadCarriersToSelect(); fetchAndRender();
 </script>
 </body>
