@@ -1,268 +1,109 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thống Kê Chi Tiết - Trucking Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f9;
-            margin: 0;
-            padding: 20px;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 15px; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .navbar { background-color: #ffffff; border-radius: 8px; margin-bottom: 20px; display: flex; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
+        .navbar a { display: block; color: #555; text-align: center; padding: 12px 20px; text-decoration: none; font-weight: bold; font-size: 14px; transition: 0.2s;}
+        .navbar a:hover { background-color: #f8f9fa; color: #007bff; }
+        .navbar a.active { background-color: #007bff; color: white; }
+        
+        h2, h3 { color: #0f172a; margin-top: 0; margin-bottom: 15px; }
+        .panel { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; }
+        .card { padding: 20px; border-radius: 8px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; transition: 0.3s; }
+        .card:hover { transform: translateY(-3px); }
+        .card h3 { margin: 0; font-size: 26px; font-weight: bold; color: white; }
+        .card p { margin: 5px 0 0; font-size: 12px; font-weight: 600; text-transform: uppercase; opacity: 0.9; }
+        .bg-blue { background: linear-gradient(135deg, #0ea5e9, #38bdf8); }
+        .bg-green { background: linear-gradient(135deg, #10b981, #34d399); }
+        .bg-red { background: linear-gradient(135deg, #f43f5e, #fb7185); }
+        .bg-orange { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
 
-        .navbar {
-            background-color: #333;
-            overflow: hidden;
-            border-radius: 8px 8px 0 0;
-            margin-bottom: 20px;
-        }
+        .table-responsive { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background-color: #f8fafc; color: #475569; padding: 12px 10px; text-align: left; border-bottom: 2px solid #cbd5e1; }
+        td { padding: 12px 10px; border-bottom: 1px solid #e2e8f0; }
+        tr:hover { background-color: #f1f5f9; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .text-bold { font-weight: 600; }
+        
+        .chart-container { position: relative; height: 350px; width: 100%; }
+        .btn-detail { background-color: #0ea5e9; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; transition: 0.2s;}
+        .btn-detail:hover { background-color: #0284c7; }
 
-        .navbar a {
-            float: left;
-            display: block;
-            color: #f2f2f2;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .navbar a:hover {
-            background-color: #ddd;
-            color: black;
-        }
-
-        .navbar a.active {
-            background-color: #007bff;
-            color: white;
-        }
-
-        h2,
-        h3 {
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            padding: 20px;
-            border-radius: 8px;
-            color: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .card h3 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .card p {
-            margin: 5px 0 0;
-            font-size: 13px;
-            opacity: 0.9;
-            text-transform: uppercase;
-        }
-
-        .bg-blue {
-            background: linear-gradient(45deg, #4099ff, #73b4ff);
-        }
-
-        .bg-green {
-            background: linear-gradient(45deg, #2ed8b6, #59e0c5);
-        }
-
-        .bg-red {
-            background: linear-gradient(45deg, #FF5370, #ff869a);
-        }
-
-        .bg-orange {
-            background: linear-gradient(45deg, #FFB64D, #ffcb80);
-        }
-
-        .details-section {
-            margin-top: 30px;
-            border-top: 2px solid #eee;
-            padding-top: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 14px;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #f8f9fa;
-            color: #555;
-            font-weight: bold;
-        }
-
-        .text-right {
-            text-align: right;
-        }
-
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 350px;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .btn-detail {
-            background-color: #17a2b8;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 950px;
-            border-radius: 8px;
-            position: relative;
-        }
-
-        .close {
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            color: #aaa;
-        }
-
-        .modal-title {
-            color: #007bff;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-            margin-top: 0;
-        }
-
-        .status-paid {
-            color: green;
-            font-weight: bold;
-        }
-
-        .status-unpaid {
-            color: red;
-            font-weight: bold;
-        }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px); }
+        .modal-content { background-color: #fff; margin: 4% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 950px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .close { position: absolute; right: 20px; top: 20px; font-size: 24px; font-weight: bold; cursor: pointer; color: #94a3b8; transition: 0.2s; }
+        .close:hover { color: #0f172a; }
+        
+        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .status-paid { background-color: #dcfce7; color: #166534; }
+        .status-unpaid { background-color: #fee2e2; color: #991b1b; }
     </style>
 </head>
-
 <body>
 
-    <div class="container">
-        <div class="navbar">
-            <a href="index.html">🏠 Dashboard</a>
-            <a href="stats.html" class="active">📊 Báo Cáo & Thống Kê</a>
-        </div>
+<div class="container">
+    <div class="navbar">
+        <a href="index.html">🏠 Dashboard</a>
+        <a href="stats.html" class="active">📊 Báo Cáo & Thống Kê</a>
+    </div>
 
-        <h2>📊 Tổng Quan Hoạt Động</h2>
-        <div class="stats-grid">
-            <div class="card bg-blue">
-                <h3 id="stat-count">0</h3>
-                <p>Tổng Booking</p>
-            </div>
-            <div class="card bg-green">
-                <h3 id="stat-revenue">0 đ</h3>
-                <p>Tổng Doanh Thu</p>
-            </div>
-            <div class="card bg-red">
-                <h3 id="stat-cost">0 đ</h3>
-                <p>Tổng Chi Phí</p>
-            </div>
-            <div class="card bg-orange">
-                <h3 id="stat-profit">0 đ</h3>
-                <p>Lợi Nhuận Ròng</p>
-            </div>
-        </div>
+    <h2>📊 Tổng Quan Hoạt Động</h2>
+    <div class="stats-grid">
+        <div class="card bg-blue"><h3 id="stat-count">0</h3><p>Tổng Booking</p></div>
+        <div class="card bg-green"><h3 id="stat-revenue">0 đ</h3><p>Tổng Doanh Thu</p></div>
+        <div class="card bg-red"><h3 id="stat-cost">0 đ</h3><p>Tổng Chi Phí</p></div>
+        <div class="card bg-orange"><h3 id="stat-profit">0 đ</h3><p>Lợi Nhuận Ròng</p></div>
+    </div>
 
+    <div class="panel">
         <div class="chart-container"><canvas id="financeChart"></canvas></div>
+    </div>
 
-        <div class="details-section">
-            <h3>🏆 Hiệu Quả Kinh Doanh Theo Nhà Xe</h3>
+    <div class="panel" style="padding: 0; overflow: hidden;">
+        <div style="padding: 20px 20px 0 20px;"><h3>🏆 Hiệu Quả Kinh Doanh Theo Nhà Xe</h3></div>
+        <div class="table-responsive" style="border: none; border-radius: 0;">
             <table>
                 <thead>
                     <tr>
                         <th>Tên Nhà Xe</th>
-                        <th class="text-right">Số Chuyến</th>
+                        <th class="text-center">Số Chuyến</th>
                         <th class="text-right">Tổng Thu</th>
                         <th class="text-right">Tổng Chi</th>
                         <th class="text-right">Lợi Nhuận</th>
                         <th class="text-right">Tỷ suất</th>
-                        <th style="text-align: center;">Chi tiết</th>
+                        <th class="text-center">Chi tiết</th>
                     </tr>
                 </thead>
                 <tbody id="carrier-table-body"></tbody>
             </table>
         </div>
     </div>
+</div>
 
-    <div id="detailModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeDetailModal()">&times;</span>
-            <h3 class="modal-title" id="modal-header">Chi Tiết Giao Dịch</h3>
+<div id="detailModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeDetailModal()">&times;</span>
+        <h3 id="modal-header" style="color: #0f172a; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">Chi Tiết Giao Dịch</h3>
+        <div class="table-responsive">
             <table>
                 <thead>
                     <tr>
                         <th>Ngày</th>
                         <th>Booking</th>
-                        <th>Số Cont</th>
+                        <th class="text-center">Số Cont</th>
                         <th class="text-right">Thu</th>
                         <th class="text-right">Chi</th>
-                        <th style="text-align: center;">Trạng thái</th>
+                        <th class="text-center">Trạng thái</th>
                         <th>Ghi chú</th>
                     </tr>
                 </thead>
@@ -270,94 +111,76 @@
             </table>
         </div>
     </div>
+</div>
 
-    <script>
-        const API_URL = '/api/trucking';
-        let globalData = [];
-        const formatCurrency = (amount) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-        const formatDate = (isoString) => isoString ? new Date(isoString).toLocaleDateString('vi-VN') : '';
+<script>
+    const API_URL = '/api/trucking'; let globalData = [];
+    const formatCurrency = (amount) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    const formatDate = (isoString) => isoString ? new Date(isoString).toLocaleDateString('vi-VN') : '-';
 
-        async function loadStats() {
-            try {
-                const response = await fetch(API_URL);
-                globalData = await response.json();
-                let totalRevenue = 0, totalCost = 0, carrierStats = {};
-                globalData.forEach(item => {
-                    const rev = Number(item.revenue) || 0, cost = Number(item.cost) || 0;
-                    totalRevenue += rev; totalCost += cost;
-                    const cName = item.carrier || "Chưa xác định";
-                    if (!carrierStats[cName]) carrierStats[cName] = { count: 0, revenue: 0, cost: 0 };
-                    carrierStats[cName].count++; carrierStats[cName].revenue += rev; carrierStats[cName].cost += cost;
-                });
-                document.getElementById('stat-count').innerText = globalData.length;
-                document.getElementById('stat-revenue').innerText = formatCurrency(totalRevenue);
-                document.getElementById('stat-cost').innerText = formatCurrency(totalCost);
-                document.getElementById('stat-profit').innerText = formatCurrency(totalRevenue - totalCost);
-                renderChart(totalRevenue, totalCost, totalRevenue - totalCost);
-                renderCarrierTable(carrierStats);
-            } catch (error) { console.error(error); }
-        }
+    async function loadStats() {
+        try {
+            const response = await fetch(API_URL); globalData = await response.json();
+            let totalRevenue = 0, totalCost = 0, carrierStats = {};
+            globalData.forEach(item => {
+                const rev = Number(item.revenue) || 0, cost = Number(item.cost) + Number(item.extraCost) || 0;
+                totalRevenue += rev; totalCost += cost;
+                const cName = item.carrier || "Chưa xác định";
+                if (!carrierStats[cName]) carrierStats[cName] = { count: 0, revenue: 0, cost: 0 };
+                carrierStats[cName].count++; carrierStats[cName].revenue += rev; carrierStats[cName].cost += cost;
+            });
+            document.getElementById('stat-count').innerText = globalData.length; document.getElementById('stat-revenue').innerText = formatCurrency(totalRevenue);
+            document.getElementById('stat-cost').innerText = formatCurrency(totalCost); document.getElementById('stat-profit').innerText = formatCurrency(totalRevenue - totalCost);
+            renderChart(totalRevenue, totalCost, totalRevenue - totalCost); renderCarrierTable(carrierStats);
+        } catch (error) {}
+    }
 
-        function renderCarrierTable(statsObj) {
-            const tbody = document.getElementById('carrier-table-body');
-            tbody.innerHTML = "";
-            Object.keys(statsObj).map(key => ({ name: key, ...statsObj[key] }))
-                .sort((a, b) => (b.revenue - b.cost) - (a.revenue - a.cost))
-                .forEach(c => {
-                    const profit = c.revenue - c.cost;
-                    const margin = c.revenue > 0 ? ((profit / c.revenue) * 100).toFixed(1) + '%' : '0%';
-                    tbody.innerHTML += `<tr>
-                    <td style="font-weight: bold;">${c.name}</td>
-                    <td class="text-right">${c.count}</td>
-                    <td class="text-right" style="color: green;">${formatCurrency(c.revenue)}</td>
-                    <td class="text-right" style="color: red;">${formatCurrency(c.cost)}</td>
-                    <td class="text-right" style="font-weight: bold;">${formatCurrency(profit)}</td>
-                    <td class="text-right">${margin}</td>
-                    <td style="text-align: center;"><button class="btn-detail" onclick="viewDetails('${c.name}')">👁️ Xem</button></td>
+    function renderCarrierTable(statsObj) {
+        document.getElementById('carrier-table-body').innerHTML = Object.keys(statsObj).map(key => ({ name: key, ...statsObj[key] }))
+            .sort((a, b) => (b.revenue - b.cost) - (a.revenue - a.cost))
+            .map(c => {
+                const profit = c.revenue - c.cost; const margin = c.revenue > 0 ? ((profit / c.revenue) * 100).toFixed(1) + '%' : '0%';
+                return `<tr>
+                    <td class="text-bold text-primary">${c.name}</td>
+                    <td class="text-center"><span style="background:#f1f5f9; padding:2px 8px; border-radius:12px; font-weight:bold;">${c.count}</span></td>
+                    <td class="text-right text-bold" style="color: #059669;">${formatCurrency(c.revenue)}</td>
+                    <td class="text-right text-bold" style="color: #e11d48;">${formatCurrency(c.cost)}</td>
+                    <td class="text-right text-bold" style="color: #d97706;">${formatCurrency(profit)}</td>
+                    <td class="text-right" style="color: #64748b; font-size: 12px;">${margin}</td>
+                    <td class="text-center"><button class="btn-detail" onclick="viewDetails('${c.name}')">Chi tiết</button></td>
                 </tr>`;
-                });
-        }
+            }).join('');
+    }
 
-        function viewDetails(carrierName) {
-            document.getElementById('modal-header').innerText = `Chi Tiết Giao Dịch: ${carrierName}`;
-            const tbody = document.getElementById('detail-table-body');
-            tbody.innerHTML = "";
-            globalData.filter(item => item.carrier === carrierName).forEach(item => {
-                const statusText = item.paymentStatus === 'paid' ? '<span class="status-paid">Đã TT</span>' : '<span class="status-unpaid">Chưa TT</span>';
-                tbody.innerHTML += `<tr>
-                <td>${formatDate(item.createdAt)}</td>
-                <td style="font-weight:bold;">${item.booking}</td>
-                <td>${item.containers ? item.containers.length : 0}</td>
-                <td class="text-right">${formatCurrency(item.revenue)}</td>
-                <td class="text-right">${formatCurrency(item.cost)}</td>
-                <td style="text-align:center;">${statusText}</td>
-                <td style="font-size:12px; color:#666;">${item.notes || ''}</td>
+    function viewDetails(carrierName) {
+        document.getElementById('modal-header').innerText = `Giao Dịch: ${carrierName}`;
+        document.getElementById('detail-table-body').innerHTML = globalData.filter(item => item.carrier === carrierName).map(item => {
+            const statusText = item.paymentStatus === 'paid' ? '<span class="status-badge status-paid">Đã TT</span>' : '<span class="status-badge status-unpaid">Chưa TT</span>';
+            return `<tr>
+                <td style="color:#64748b; font-size:12px;">${formatDate(item.createdAt)}</td>
+                <td class="text-bold">${item.booking}</td>
+                <td class="text-center">${item.containers ? item.containers.length : 0}</td>
+                <td class="text-right" style="color:#059669;">${formatCurrency(item.revenue)}</td>
+                <td class="text-right" style="color:#e11d48;">${formatCurrency(Number(item.cost)+Number(item.extraCost))}</td>
+                <td class="text-center">${statusText}</td>
+                <td style="font-size:11px; color:#64748b; font-style:italic;">${item.notes || '-'}</td>
             </tr>`;
-            });
-            document.getElementById('detailModal').style.display = "block";
-        }
+        }).join('');
+        document.getElementById('detailModal').style.display = "block";
+    }
 
-        function closeDetailModal() { document.getElementById('detailModal').style.display = "none"; }
-        window.onclick = (e) => { if (e.target == document.getElementById('detailModal')) closeDetailModal(); }
+    function closeDetailModal() { document.getElementById('detailModal').style.display = "none"; }
+    window.onclick = (e) => { if (e.target == document.getElementById('detailModal')) closeDetailModal(); }
 
-        function renderChart(revenue, cost, profit) {
-            const ctx = document.getElementById('financeChart').getContext('2d');
-            if (window.myChart) window.myChart.destroy();
-            window.myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Doanh Thu', 'Chi Phí', 'Lợi Nhuận'],
-                    datasets: [{
-                        data: [revenue, cost, profit],
-                        backgroundColor: ['rgba(46, 216, 182, 0.7)', 'rgba(255, 83, 112, 0.7)', 'rgba(255, 182, 77, 0.7)'],
-                        borderWidth: 1
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
-        }
-        loadStats();
-    </script>
+    function renderChart(revenue, cost, profit) {
+        const ctx = document.getElementById('financeChart').getContext('2d'); if (window.myChart) window.myChart.destroy();
+        window.myChart = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: ['Tổng Doanh Thu', 'Tổng Chi Phí', 'Lợi Nhuận Ròng'], datasets: [{ data: [revenue, cost, profit], backgroundColor: ['rgba(16, 185, 129, 0.8)', 'rgba(244, 63, 94, 0.8)', 'rgba(245, 158, 11, 0.8)'], borderRadius: 6 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { borderDash: [5, 5] } } } }
+        });
+    }
+    loadStats();
+</script>
 </body>
-
 </html>
